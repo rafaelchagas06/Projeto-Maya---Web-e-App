@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registro de Execução"
+        android:textColor="#1A1A1A"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Qual foi o seu nível de dor? (0 a 10)"
+        android:textColor="#424242"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <SeekBar
+        android:id="@+id/sb_dor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:max="10"
+        android:progress="0"
+        app:layout_constraintTop_toBottomOf="@id/tv_question"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_dor_min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 (Sem dor)"
+        android:textColor="#9E9E9E"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/sb_dor"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_valor_dor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="#F07167"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/sb_dor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_dor_max"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 (Muita dor)"
+        android:textColor="#9E9E9E"
+        android:textSize="10sp"
+        app:layout_constraintTop_toBottomOf="@id/sb_dor"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_obs_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Observações (opcional)"
+        android:textColor="#424242"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_valor_dor"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/et_observacoes"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="8dp"
+        android:background="#F5F5F5"
+        android:gravity="top|start"
+        android:hint="Como você se sentiu? Alguma dificuldade?"
+        android:inputType="textMultiLine"
+        android:padding="12dp"
+        android:textColor="#1A1A1A"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_obs_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btn_salvar_registro"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="#4DB6AC"
+        android:text="SALVAR REGISTRO"
+        android:textColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/et_observacoes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
