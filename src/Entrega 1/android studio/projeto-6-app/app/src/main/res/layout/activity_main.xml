@@ -16,14 +16,12 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Cabeçalho (Logo e Usuário) Componentizado com Fragment -->
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/header_fragment_container"
                 android:name="com.example.rpgclinicapp.HeaderFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <!-- Saudação -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,7 +39,6 @@
                 android:textColor="#424242"
                 android:textSize="12sp" />
 
-            <!-- Card: Rotina de Alongamento -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,7 +90,6 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Círculo Centralização -->
                     <FrameLayout
                         android:layout_width="160dp"
                         android:layout_height="160dp"
@@ -132,7 +128,6 @@
                         android:layout_marginBottom="12dp"
                         android:background="#EEEEEE" />
 
-                    <!-- Tarefa 1 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -171,7 +166,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Escala de Dor -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -187,16 +181,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="10">
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#66BB6A" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="1" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#66BB6A" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="2" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#81C784" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="3" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#FFEE58" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="4" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#FFEB3B" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="5" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#FDD835" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="6" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#EF5350" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="7" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#F44336" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="8" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#E53935" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="9" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#D32F2F" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="10" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                <TextView android:id="@+id/dor_1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#66BB6A" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="1" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#66BB6A" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="2" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#81C784" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="3" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#FFEE58" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="4" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#FFEB3B" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="5" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_6" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#FDD835" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="6" android:textColor="#000000" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_7" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#EF5350" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="7" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_8" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#F44336" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="8" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_9" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="4dp" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#E53935" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="9" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
+                <TextView android:id="@+id/dor_10" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_rounded" android:backgroundTint="#D32F2F" android:gravity="center" android:paddingTop="6dp" android:paddingBottom="6dp" android:text="10" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:clickable="true" android:focusable="true"/>
             </LinearLayout>
 
             <RelativeLayout
@@ -208,7 +202,6 @@
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Severa" android:textColor="#424242" android:textSize="10sp" />
             </RelativeLayout>
 
-            <!-- Card: Pontuação Postura -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -264,7 +257,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Barra de Navegação Inferior -->
     <LinearLayout
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
@@ -275,7 +267,6 @@
         android:orientation="horizontal"
         android:weightSum="5">
 
-        <!-- Início -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -296,7 +287,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Agenda -->
         <LinearLayout
             android:id="@+id/nav_agenda"
             android:layout_width="0dp"
@@ -320,7 +310,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Exercícios -->
         <LinearLayout
             android:id="@+id/nav_exercicios"
             android:layout_width="0dp"
@@ -344,7 +333,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Progresso -->
         <LinearLayout
             android:id="@+id/nav_progresso"
             android:layout_width="0dp"
@@ -368,7 +356,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Perfil -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
