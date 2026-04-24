@@ -23,6 +23,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/textSaudacao"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -32,6 +33,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/textData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"

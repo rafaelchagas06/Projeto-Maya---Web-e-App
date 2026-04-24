@@ -59,8 +59,17 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             LoginResponse loginResp = response.body();
                             if (loginResp.isSucesso()) {
-                                Toast.makeText(LoginActivity.this, "Bem-vindo(a), " + loginResp.getUsuario().getNome(),
-                                        Toast.LENGTH_SHORT).show();
+                                //  Pegamos o nome que a API devolveu
+                                String nomeDaPessoa = loginResp.getUsuario().getNome();
+
+                                //  Abrimos o "bloco de notas" (SharedPreferences) e salvamos o nome nela
+                                android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+                                android.content.SharedPreferences.Editor editor = prefs.edit();
+                                editor.putString("nomeDoUsuario", nomeDaPessoa);
+                                editor.apply(); // Confirma o salvamento
+
+                                //  Mostra o aviso na tela e vai para a tela principal
+                                Toast.makeText(LoginActivity.this, "Bem-vindo(a), " + nomeDaPessoa, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();

@@ -99,7 +99,7 @@ public class AgendaActivity extends AppCompatActivity {
         Button btnAgendar = findViewById(R.id.btn_agendar);
 
         // Preenche com a data atual inicialmente
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         selectedDate = sdf.format(new Date(calendarView.getDate()));
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {

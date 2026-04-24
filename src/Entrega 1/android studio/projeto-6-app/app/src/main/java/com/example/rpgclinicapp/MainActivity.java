@@ -21,19 +21,56 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
+        // --- Lógica da Saudação e Data Dinâmica  ---
+        configurarSaudacaoEData();
+
         // --- Lógica de Notificações ---
         criarCanalNotificacao();
         solicitarPermissaoEAgendarLembrete();
 
-        // --- Lógica da Escala de Dor (NOVO) ---
+        // --- Lógica da Escala de Dor ---
         configurarEscalaDor();
 
         // --- Configuração da Barra Inferior ---
         configurarNavegacao();
     }
 
+    private void configurarSaudacaoEData() {
+        TextView textSaudacao = findViewById(R.id.textSaudacao);
+        TextView textData = findViewById(R.id.textData);
+
+        if (textSaudacao != null && textData != null) {
+            //  Lógica da Saudação (Bom dia, Boa tarde, Boa noite)
+            java.util.Calendar calendario = java.util.Calendar.getInstance();
+            int horaAtual = calendario.get(java.util.Calendar.HOUR_OF_DAY);
+            String saudacao;
+
+            if (horaAtual >= 6 && horaAtual < 12) {
+                saudacao = "Bom dia";
+            } else if (horaAtual >= 12 && horaAtual < 18) {
+                saudacao = "Boa tarde";
+            } else {
+                saudacao = "Boa noite";
+            }
+
+            // . RECUPERA O NOME DO USUÁRIO (Essa é a parte importante!)
+            android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+            // Se ele não achar nenhum nome, ele vai escrever "Paciente" para não ficar em branco
+            String nomeUsuario = prefs.getString("nomeDoUsuario", "Paciente");
+
+            textSaudacao.setText(saudacao + ", " + nomeUsuario + "!");
+
+            //  Lógica da Data formatada
+            java.text.SimpleDateFormat formatadorData = new java.text.SimpleDateFormat("EEEE, dd 'de' MMMM", new java.util.Locale("pt", "BR"));
+            String dataAtual = formatadorData.format(new java.util.Date());
+            dataAtual = dataAtual.substring(0, 1).toUpperCase() + dataAtual.substring(1) + ".";
+
+            textData.setText(dataAtual);
+        }
+    }
+
     private void configurarEscalaDor() {
-        // IDs dos números que você colocou no XML
+        // IDs dos números
         final int[] idsBotoesDor = {
                 R.id.dor_1, R.id.dor_2, R.id.dor_3, R.id.dor_4, R.id.dor_5,
                 R.id.dor_6, R.id.dor_7, R.id.dor_8, R.id.dor_9, R.id.dor_10
