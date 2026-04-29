@@ -9,8 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class RetrofitClient {
 
     // URL do backend no CodeSandbox (Certifique-se que o projeto lá está como PUBLIC)
-    private static final String BASE_URL = "https://73wl5m-3000.csb.app/";
-
+    private static final String BASE_URL = "https://projeto6.onrender.com/";
     private static Retrofit retrofit = null;
 
     public static ClinicApiService getApiService() {
