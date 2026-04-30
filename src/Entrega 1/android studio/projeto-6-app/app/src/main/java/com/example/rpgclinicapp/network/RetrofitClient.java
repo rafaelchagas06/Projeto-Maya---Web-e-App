@@ -8,21 +8,21 @@ import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
 
-    // URL do backend no CodeSandbox (Certifique-se que o projeto lá está como PUBLIC)
     private static final String BASE_URL = "https://projeto6.onrender.com/";
     private static Retrofit retrofit = null;
 
     public static ClinicApiService getApiService() {
         if (retrofit == null) {
-            // Adiciona log para ver o que está acontecendo nas requisições
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-            
-            // Criando um cliente OkHttp com logs e timeouts para o CodeSandbox
+
+            // Aumentamos os timeouts para 90 segundos para dar tempo do Render ligar
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(90, TimeUnit.SECONDS) // Tempo para conectar
+                    .readTimeout(90, TimeUnit.SECONDS)    // Tempo para ler a resposta
+                    .writeTimeout(90, TimeUnit.SECONDS)   // Tempo para enviar dados
+                    .retryOnConnectionFailure(true)       // Tenta reconectar se falhar
                     .build();
 
             retrofit = new Retrofit.Builder()

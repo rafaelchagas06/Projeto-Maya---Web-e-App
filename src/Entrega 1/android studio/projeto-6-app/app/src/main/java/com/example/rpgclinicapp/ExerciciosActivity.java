@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 public class ExerciciosActivity extends AppCompatActivity {
@@ -59,17 +57,17 @@ public class ExerciciosActivity extends AppCompatActivity {
             });
         }
     }
-    
+
     public void onMarcarCompleto(View view) {
         android.app.Dialog dialog = new android.app.Dialog(this);
         dialog.setContentView(R.layout.dialog_registro_execucao);
         dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-        
+
         android.widget.SeekBar sbDor = dialog.findViewById(R.id.sb_dor);
         android.widget.TextView tvValorDor = dialog.findViewById(R.id.tv_valor_dor);
         android.widget.EditText etObservacoes = dialog.findViewById(R.id.et_observacoes);
         android.widget.Button btnSalvar = dialog.findViewById(R.id.btn_salvar_registro);
-        
+
         sbDor.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
@@ -80,12 +78,23 @@ public class ExerciciosActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(android.widget.SeekBar seekBar) {}
         });
-        
+
         btnSalvar.setOnClickListener(v -> {
             String dor = tvValorDor.getText().toString();
+
+            // --- LÓGICA PARA CONTABILIZAR NO CÍRCULO ---
+            // Acessa o "banco" local MeusDados
+            android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+            int concluidosAtual = prefs.getInt("exerciciosConcluidos", 0);
+
+            // Aumenta +1 no contador e salva para a MainActivity ler depois
+            prefs.edit().putInt("exerciciosConcluidos", concluidosAtual + 1).apply();
+            // ------------------------------------------
+
             android.widget.Toast.makeText(this, "Registro salvo! Dor: " + dor, android.widget.Toast.LENGTH_SHORT).show();
             dialog.dismiss();
-            
+
+            // Muda visualmente o botão para "Completo"
             if (view instanceof android.widget.TextView) {
                 android.widget.TextView tv = (android.widget.TextView) view;
                 tv.setText("Completo ✓");
@@ -94,7 +103,7 @@ public class ExerciciosActivity extends AppCompatActivity {
                 tv.setEnabled(false);
             }
         });
-        
+
         dialog.show();
     }
 }
