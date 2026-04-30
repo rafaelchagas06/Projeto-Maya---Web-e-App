@@ -258,16 +258,11 @@
                                     android:layout_height="0dp"
                                     android:layout_weight="1" />
 
-                                <ImageView
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@android:drawable/checkbox_on_background"
-                                    app:tint="#4DB6AC" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
-                                    android:text="2/3"
                                     android:textColor="#1A1A1A"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
@@ -358,16 +353,11 @@
                                     android:layout_height="0dp"
                                     android:layout_weight="1" />
 
-                                <ImageView
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@android:drawable/checkbox_on_background"
-                                    app:tint="#4DB6AC" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
-                                    android:text="3/3"
                                     android:textColor="#1A1A1A"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />
@@ -458,16 +448,11 @@
                                     android:layout_height="0dp"
                                     android:layout_weight="1" />
 
-                                <ImageView
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@android:drawable/checkbox_on_background"
-                                    app:tint="#4DB6AC" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
-                                    android:text="2/2"
                                     android:textColor="#1A1A1A"
                                     android:textSize="10sp"
                                     android:textStyle="bold" />

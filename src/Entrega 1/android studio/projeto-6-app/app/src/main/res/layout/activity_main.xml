@@ -64,7 +64,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Rotina de Alongamento"
+                            android:text="Rotina de Exercícios"
                             android:textColor="#1A1A1A"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -126,14 +126,7 @@
                                 android:textColor="#1A1A1A"
                                 android:textSize="44sp"
                                 android:textStyle="bold" />
-                            <TextView
-                                android:id="@+id/textProximoHorario"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="Próximo\nAlongamento: 9h30"
-                                android:textColor="#424242"
-                                android:textSize="10sp" />
+
                         </LinearLayout>
                     </FrameLayout>
 
@@ -154,18 +147,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Inclinação de Pescoço (10 min)"
-                                android:textColor="#424242"
-                                android:textSize="12sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="9h30"
-                                android:textColor="#9E9E9E"
-                                android:textSize="10sp" />
+
                         </LinearLayout>
                         <TextView
                             android:layout_width="wrap_content"
