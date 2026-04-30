@@ -97,10 +97,31 @@ export default function Pacientes() {
     <div>
       <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '28px', marginBottom: '8px' }}>Gestão de Usuários</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Visualizar, Adicionar, Editar e Deletar Usuários (CRUD Completo).</p>
+          <h1 style={{ fontSize: '28px', marginBottom: '8px', color: '#0F172A' }}>Gestão de Usuários</h1>
+          <p style={{ color: '#64748B' }}>Visualizar, Adicionar, Editar e Deletar Usuários (CRUD Completo).</p>
         </div>
-        <button className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={openAddModal}>
+        
+        {/* BOTÃO CABEÇALHO ATUALIZADO */}
+        <button 
+          onClick={openAddModal}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            background: '#06B6D4', 
+            color: '#FFFFFF', 
+            border: 'none', 
+            padding: '12px 24px', 
+            borderRadius: '8px', 
+            fontSize: '14px',
+            fontWeight: '600', 
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)', 
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.background = '#0891B2'} 
+          onMouseOut={(e) => e.currentTarget.style.background = '#06B6D4'}
+        >
           <Plus size={20} /> Adicionar Novo Usuário
         </button>
       </header>
@@ -190,9 +211,49 @@ export default function Pacientes() {
                 <label className="label-text">Senha de Acesso</label>
                 <input required type="text" className="input-field" value={formSenha} onChange={e => setFormSenha(e.target.value)} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
-                <button type="button" className="btn-primary" style={{ background: 'var(--border-light)', color: 'var(--text-main)' }} onClick={closeModal}>Cancelar</button>
-                <button type="submit" className="btn-accent" style={{ background: isEditing ? '#3B82F6' : 'var(--primary)' }}>
+              
+              {/* BOTÕES DO MODAL ATUALIZADOS */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+                <button 
+                  type="button" 
+                  style={{ 
+                    background: '#F1F5F9', 
+                    color: '#64748B', 
+                    border: 'none', 
+                    padding: '10px 20px', 
+                    borderRadius: '8px', 
+                    fontSize: '14px',
+                    fontWeight: '600', 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }} 
+                  onMouseOver={(e) => e.currentTarget.style.background = '#E2E8F0'} 
+                  onMouseOut={(e) => e.currentTarget.style.background = '#F1F5F9'}
+                  onClick={closeModal}
+                >
+                  Cancelar
+                </button>
+
+                <button 
+                  type="submit" 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px', 
+                    background: '#06B6D4', 
+                    color: '#FFFFFF', 
+                    border: 'none', 
+                    padding: '10px 24px', 
+                    borderRadius: '8px', 
+                    fontSize: '14px',
+                    fontWeight: '600', 
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)', 
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.background = '#0891B2'} 
+                  onMouseOut={(e) => e.currentTarget.style.background = '#06B6D4'}
+                >
                   {isEditing ? 'Salvar Edição' : 'Adicionar Usuário'}
                 </button>
               </div>
