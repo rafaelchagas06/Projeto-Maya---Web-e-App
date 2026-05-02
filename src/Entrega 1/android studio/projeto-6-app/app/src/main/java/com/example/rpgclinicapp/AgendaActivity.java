@@ -55,10 +55,6 @@ public class AgendaActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_agenda);
 
-        // --- SIMULAÇÃO: Bloqueando horários (Depois virão do SQLite/API) ---
-        horariosOcupados.add("09:00");
-        horariosOcupados.add("14:00");
-        // ----------------------------------------------------------------
 
         tvTextoConfirmacao = findViewById(R.id.tv_texto_confirmacao);
         btnAgendar = findViewById(R.id.btn_agendar);
