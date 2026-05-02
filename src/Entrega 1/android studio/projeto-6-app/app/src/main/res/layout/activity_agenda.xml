@@ -16,7 +16,6 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Cabeçalho (Botão Voltar e Logo) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -27,22 +26,10 @@
                     android:id="@+id/btn_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
                     android:clickable="true"
-                    android:focusable="true">
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@android:drawable/ic_menu_revert"
-                        app:tint="#1A1A1A" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="BACK"
-                        android:textColor="#1A1A1A"
-                        android:textSize="8sp"
-                        android:textStyle="bold" />
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
                 </LinearLayout>
 
                 <View
@@ -55,6 +42,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -62,6 +50,7 @@
                         android:textColor="#4DD0E1"
                         android:textSize="14sp"
                         android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -72,7 +61,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Título -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,7 +78,6 @@
                 android:textColor="#424242"
                 android:textSize="12sp" />
 
-            <!-- Calendário Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,64 +92,141 @@
                     android:layout_height="wrap_content" />
             </androidx.cardview.widget.CardView>
 
-            <!-- Botões de Horário -->
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:weightSum="3">
+                android:scrollbars="none">
 
-                <!-- Horário 1 (Selecionado) -->
-                <TextView
-                    android:id="@+id/tv_time_1"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:id="@+id/layout_horarios"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_time_selected"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:text="10:30"
-                    android:textColor="#1A1A1A"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
 
-                <!-- Horário 2 -->
-                <TextView
-                    android:id="@+id/tv_time_2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_time_unselected"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:text="11:30"
-                    android:textColor="#1A1A1A"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/hora_0800"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="08:00"
+                        android:textColor="#1A1A1A" />
 
-                <!-- Horário 3 -->
-                <TextView
-                    android:id="@+id/tv_time_3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_time_unselected"
-                    android:gravity="center"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:text="12:30"
-                    android:textColor="#1A1A1A"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/hora_0900"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="09:00"
+                        android:textColor="#1A1A1A" />
 
-            <!-- Card de Confirmação Final -->
+                    <TextView
+                        android:id="@+id/hora_1000"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_selected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="10:00"
+                        android:textColor="#1A1A1A"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/hora_1100"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="11:00"
+                        android:textColor="#1A1A1A" />
+
+                    <TextView
+                        android:id="@+id/hora_1300"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="13:00"
+                        android:textColor="#1A1A1A" />
+
+                    <TextView
+                        android:id="@+id/hora_1400"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="14:00"
+                        android:textColor="#1A1A1A" />
+
+                    <TextView
+                        android:id="@+id/hora_1500"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="15:00"
+                        android:textColor="#1A1A1A" />
+
+                    <TextView
+                        android:id="@+id/hora_1600"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="16:00"
+                        android:textColor="#1A1A1A" />
+
+                    <TextView
+                        android:id="@+id/hora_1700"
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/bg_time_unselected"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:onClick="selecionarHora"
+                        android:text="17:00"
+                        android:textColor="#1A1A1A" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,10 +259,11 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tv_texto_confirmacao"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Dia 19 de Março às 10:30h"
+                        android:text="Dia 19 de Março às 10:00h"
                         android:textColor="#1A1A1A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -227,7 +292,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Barra de Navegação Inferior -->
     <LinearLayout
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
@@ -238,21 +302,22 @@
         android:orientation="horizontal"
         android:weightSum="5">
 
-        <!-- Início -->
         <LinearLayout
             android:id="@+id/nav_inicio"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_myplaces"
                 app:tint="#757575" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -262,18 +327,19 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Agenda (Ativa) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_today"
                 app:tint="#F07167" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -283,21 +349,22 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Exercícios -->
         <LinearLayout
             android:id="@+id/nav_exercicios"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_sort_by_size"
                 app:tint="#757575" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -307,21 +374,22 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Progresso -->
         <LinearLayout
             android:id="@+id/nav_progresso"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_sort_alphabetically"
                 app:tint="#757575" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -331,18 +399,19 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!-- Perfil -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_info_details"
                 app:tint="#757575" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
