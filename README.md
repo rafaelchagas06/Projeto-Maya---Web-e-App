@@ -47,14 +47,27 @@ A solução será composta por três pilares principais: um aplicativo mobile pa
       - Programação Orientada a Objetivos e Estrutura de Dados
       - Programação para Dispositivos Móveis
     - Documentação.docx
+    - Banner_FECAP_CCOMP3_AlinhaTech.pdf
+    - Documento - Projeto de Extensão - COM Empresa.docx
+    - README.md
+    - Venha para a FECAP!.txt
   - **imagens**
+  - Bootstrap_5.0_Screenshot.png
   - **src**
     - **Entrega 1**
-      - Backend
       - Frontend
+          - Colocar os códigos do Frontend Aqui.txt
+      - android studio/projeto-6-app
+          - Colocar os códigos do Frontend Aqui.txt
+      - Backend
+          - Colocar os códigos do Frontend Aqui.txt
     - **Entrega 2**
-      - Backend
       - Frontend
+          - Colocar os códigos do Frontend Aqui.txt
+      - android studio/projeto-6-app
+          - Colocar os códigos do Frontend Aqui.txt
+      - Backend
+          - Colocar os códigos do Frontend Aqui.txt
 
 ---
 
