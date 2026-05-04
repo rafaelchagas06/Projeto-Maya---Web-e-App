@@ -3,18 +3,23 @@ package com.example.rpgclinicapp.network;
 import com.example.rpgclinicapp.models.AgendaRequest;
 import com.example.rpgclinicapp.models.AgendaResponse;
 import com.example.rpgclinicapp.models.CadastroRequest;
+import com.example.rpgclinicapp.models.Exercicio;
 import com.example.rpgclinicapp.models.LoginRequest;
 import com.example.rpgclinicapp.models.LoginResponse;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ClinicApiService {
 
     @POST("/api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
-
+    @GET("/api/exercicios")
+    Call<List<Exercicio>> getExercicios();
     @POST("/api/auth/register")
     Call<LoginResponse> cadastrar(@Body CadastroRequest request);
 

@@ -1,63 +1,101 @@
 package com.example.rpgclinicapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.rpgclinicapp.models.Exercicio;
+import com.example.rpgclinicapp.network.RetrofitClient;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ExerciciosActivity extends AppCompatActivity {
+
+    private RecyclerView rvExercicios;
+    private ExercicioAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Remove a Action Bar no topo
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         setContentView(R.layout.activity_exercicios);
 
-        // Barra de Nav - Ir para Início
+        // 1. Configurar o RecyclerView (Lista)
+        rvExercicios = findViewById(R.id.rv_exercicios);
+        if (rvExercicios != null) {
+            rvExercicios.setLayoutManager(new LinearLayoutManager(this));
+        }
+
+        // 2. Chamar a API para buscar os exercícios
+        buscarExercicios();
+
+        // 3. Configurar a Navegação
+        configurarNavegacao();
+    }
+
+    private void buscarExercicios() {
+        RetrofitClient.getApiService().getExercicios().enqueue(new Callback<List<Exercicio>>() {
+            @Override
+            public void onResponse(Call<List<Exercicio>> call, Response<List<Exercicio>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Exercicio> lista = response.body();
+
+                    // Configura o Adapter com a lista que veio do servidor
+                    adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
+                        // Quando clicar no botão da lista, abre o seu Dialog de Dor
+                        onMarcarCompleto(view);
+                    });
+
+                    rvExercicios.setAdapter(adapter);
+                } else {
+                    Toast.makeText(ExerciciosActivity.this, "Erro ao carregar dados", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Exercicio>> call, Throwable t) {
+                Toast.makeText(ExerciciosActivity.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void configurarNavegacao() {
         LinearLayout navInicio = findViewById(R.id.nav_inicio);
         if (navInicio != null) {
-            navInicio.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ExerciciosActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
-                }
+            navInicio.setOnClickListener(v -> {
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
             });
         }
 
-        // Barra de Nav - Ir para Agenda
         LinearLayout navAgenda = findViewById(R.id.nav_agenda);
         if (navAgenda != null) {
-            navAgenda.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ExerciciosActivity.this, AgendaActivity.class);
-                    startActivity(intent);
-                }
-            });
+            navAgenda.setOnClickListener(v -> startActivity(new Intent(this, AgendaActivity.class)));
         }
 
-        // Barra de Nav - Ir para Progresso
         LinearLayout navProgresso = findViewById(R.id.nav_progresso);
         if (navProgresso != null) {
-            navProgresso.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ExerciciosActivity.this, ProgressoActivity.class);
-                    startActivity(intent);
-                }
-            });
+            navProgresso.setOnClickListener(v -> startActivity(new Intent(this, ProgressoActivity.class)));
         }
     }
 
+    // Sua lógica original do Dialog de Dor
     public void onMarcarCompleto(View view) {
         android.app.Dialog dialog = new android.app.Dialog(this);
         dialog.setContentView(R.layout.dialog_registro_execucao);
@@ -65,7 +103,6 @@ public class ExerciciosActivity extends AppCompatActivity {
 
         android.widget.SeekBar sbDor = dialog.findViewById(R.id.sb_dor);
         android.widget.TextView tvValorDor = dialog.findViewById(R.id.tv_valor_dor);
-        android.widget.EditText etObservacoes = dialog.findViewById(R.id.et_observacoes);
         android.widget.Button btnSalvar = dialog.findViewById(R.id.btn_salvar_registro);
 
         sbDor.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
@@ -73,28 +110,19 @@ public class ExerciciosActivity extends AppCompatActivity {
             public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
                 tvValorDor.setText(String.valueOf(progress));
             }
-            @Override
-            public void onStartTrackingTouch(android.widget.SeekBar seekBar) {}
-            @Override
-            public void onStopTrackingTouch(android.widget.SeekBar seekBar) {}
+            @Override public void onStartTrackingTouch(android.widget.SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(android.widget.SeekBar seekBar) {}
         });
 
         btnSalvar.setOnClickListener(v -> {
             String dor = tvValorDor.getText().toString();
-
-            // --- LÓGICA PARA CONTABILIZAR NO CÍRCULO ---
-            // Acessa o "banco" local MeusDados
-            android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
             int concluidosAtual = prefs.getInt("exerciciosConcluidos", 0);
-
-            // Aumenta +1 no contador e salva para a MainActivity ler depois
             prefs.edit().putInt("exerciciosConcluidos", concluidosAtual + 1).apply();
-            // ------------------------------------------
 
-            android.widget.Toast.makeText(this, "Registro salvo! Dor: " + dor, android.widget.Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Registro salvo! Dor: " + dor, Toast.LENGTH_SHORT).show();
             dialog.dismiss();
 
-            // Muda visualmente o botão para "Completo"
             if (view instanceof android.widget.TextView) {
                 android.widget.TextView tv = (android.widget.TextView) view;
                 tv.setText("Completo ✓");
