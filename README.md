@@ -24,8 +24,7 @@
 ## Descrição
 
 <p align="center">
-<img src="https://pix4free.org/assets/library/2021-01-20/originals/game.jpg" alt="NOME DO JOGO" border="0">
-  Game by <a href="http://www.nyphotographic.com/">Nick Youngson</a> <a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> <a href="http://pix4free.org/">Pix4free</a>
+<img <img width="1339" height="636" alt="unnamed" src="https://github.com/user-attachments/assets/a6129f2b-4984-4417-9b2e-43710466f705" />
 </p>
 
 **Sobre o projeto:**
@@ -94,10 +93,19 @@ Há também 4 pastas que seguem da seguinte forma:
 ## 🛠 Instalação
 
 <b>Android:</b>
+Instalar o APP.apk:
 
-Faça o Download do APP.apk no seu celular.
-Execute o APK e siga as instruções de seu telefone.
+1. No menu superior do Android Studio, clique em Build.
 
+2. Selecione a opção Build Bundle(s) / APK(s).
+
+3. Clique em Build APK(s).
+
+4. O Android Studio começará a compilar o projeto. Quando terminar, uma notificação aparecerá no canto inferior direito.
+
+5. Nessa notificação, clique em locate para abrir a pasta onde o arquivo .apk foi salvo.
+
+OBS: Com o APK salvo basta apenas abrir o download que o app estará funcionando no seu dispositivo.
 
 ## 💻 Configuração para Desenvolvimento
 
@@ -120,9 +128,10 @@ Utilize o link <https://chooser-beta.creativecommons.org/> para fazer uma licen�
 
 Aqui estão as referências usadas no projeto.
 
-1. <https://github.com/iuricode/readme-template>
-2. <https://github.com/gabrieldejesus/readme-model>
-3. <https://chooser-beta.creativecommons.org/>
-4. <https://freesound.org/>
-5. <https://www.toptal.com/developers/gitignore>
-6. Músicas por: <a href="https://freesound.org/people/DaveJf/sounds/616544/"> DaveJf </a> e <a href="https://freesound.org/people/DRFX/sounds/338986/"> DRFX </a> ambas com Licença CC 0.
+1. COMO CRIAR TELA DE LOGIN - HTTPS://WWW.YOUTUBE.COM/WATCH?V=OXIUT0CAP_M
+
+2. COMO ADICIONAR VÍDEO NO ANDROID STUDIO - HTTPS://WWW.YOUTUBE.COM/WATCH?V=WK1ISBLEO-0
+
+3. COMO CRIAR PROGESSBAR - HTTPS://WWW.YOUTUBE.COM/WATCH?V=GMZE5--CCMO
+
+4. COMO IMPLEMENTAR BACKEND COM RENDER HTTPS://WWW.YOUTUBE.COM/WATCH?V=A2VOUYZZMCW</a>
