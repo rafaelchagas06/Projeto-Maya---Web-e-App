@@ -7,7 +7,8 @@
 ---
 
 # 💡 Projeto AlinhaTech  
-### **Maya Yamamoto RPG**
+
+## **Maya Yamamoto RPG**
 
 ---
 
