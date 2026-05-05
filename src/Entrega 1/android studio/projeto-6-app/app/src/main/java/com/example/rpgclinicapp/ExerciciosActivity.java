@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.rpgclinicapp.models.CheckinRequest; // Import Novo
+import com.example.rpgclinicapp.models.CheckinRequest;
 import com.example.rpgclinicapp.models.Exercicio;
 import com.example.rpgclinicapp.network.RetrofitClient;
 
@@ -31,17 +31,20 @@ public class ExerciciosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Oculta a Action Bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         setContentView(R.layout.activity_exercicios);
 
+        // 1. Configurar o RecyclerView
         rvExercicios = findViewById(R.id.rv_exercicios);
         if (rvExercicios != null) {
             rvExercicios.setLayoutManager(new LinearLayoutManager(this));
         }
 
+        // 2. Buscar exercícios e configurar navegação
         buscarExercicios();
         configurarNavegacao();
     }
@@ -53,14 +56,14 @@ public class ExerciciosActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Exercicio> lista = response.body();
 
-                    // Ajustado para passar o objeto 'exercicio' para o método de completar
+                    // Configura o Adapter passando o clique para o método onMarcarCompleto
                     adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
                         onMarcarCompleto(view, exercicio);
                     });
 
                     rvExercicios.setAdapter(adapter);
                 } else {
-                    Toast.makeText(ExerciciosActivity.this, "Erro ao carregar dados", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ExerciciosActivity.this, "Erro ao carregar exercícios", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -92,7 +95,7 @@ public class ExerciciosActivity extends AppCompatActivity {
         }
     }
 
-    // Método atualizado para receber o objeto Exercicio
+    // Método que abre o Dialog e envia os dados para o Supabase via Backend
     public void onMarcarCompleto(View view, Exercicio exercicio) {
         android.app.Dialog dialog = new android.app.Dialog(this);
         dialog.setContentView(R.layout.dialog_registro_execucao);
@@ -115,35 +118,40 @@ public class ExerciciosActivity extends AppCompatActivity {
             int nivelDor = sbDor.getProgress();
             String nomeEx = (exercicio != null) ? exercicio.getNome() : "Exercício";
 
-            // 1. Criar o objeto de Checkin para enviar ao Supabase
-            // paciente_id 1 e nome fixo por enquanto
-            CheckinRequest checkin = new CheckinRequest(1, "Paciente Teste", nomeEx, nivelDor);
+            // --- RECUPERA O NOME E ID DO USUÁRIO QUE FEZ LOGIN ---
+            SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
 
-            // 2. Chamar a API para salvar no banco via Render
+            // Agora buscando o Nome e o ID salvos dinamicamente no LoginActivity
+            String nomeUsuarioLogado = prefs.getString("nomeDoUsuario", "Paciente");
+            long idUsuarioLogado = prefs.getLong("idDoUsuario", 0);
+
+            // 1. Criar o objeto de Checkin com dados DINÂMICOS
+            CheckinRequest checkin = new CheckinRequest(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
+
+            // 2. Enviar para o Render (que salva no Supabase)
             RetrofitClient.getApiService().salvarCheckin(checkin).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(ExerciciosActivity.this, "✅ Check-in enviado ao prontuário!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ExerciciosActivity.this, "✅ Registro enviado para: " + nomeUsuarioLogado, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(ExerciciosActivity.this, "❌ Erro ao salvar check-in", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ExerciciosActivity.this, "❌ Erro ao salvar no prontuário. Verifique o login.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(ExerciciosActivity.this, "⚠️ Falha de conexão com o servidor", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ExerciciosActivity.this, "⚠️ Erro de conexão com o servidor", Toast.LENGTH_SHORT).show();
                 }
             });
 
-            // 3. Lógica local de progresso (Círculo na Home)
-            SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+            // 3. Atualizar progresso local (Círculo da Home)
             int concluidosAtual = prefs.getInt("exerciciosConcluidos", 0);
             prefs.edit().putInt("exerciciosConcluidos", concluidosAtual + 1).apply();
 
             dialog.dismiss();
 
-            // 4. Mudar visual do botão
+            // 4. Mudar visual do botão para "Completo"
             if (view instanceof android.widget.TextView) {
                 android.widget.TextView tv = (android.widget.TextView) view;
                 tv.setText("Completo ✓");

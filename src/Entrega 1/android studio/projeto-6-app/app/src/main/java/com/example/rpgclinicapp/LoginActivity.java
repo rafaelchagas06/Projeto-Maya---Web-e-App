@@ -59,16 +59,20 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             LoginResponse loginResp = response.body();
                             if (loginResp.isSucesso()) {
-                                //  Pegamos o nome que a API devolveu
+                                // 1. Pegamos o Nome e o ID que a API devolveu
                                 String nomeDaPessoa = loginResp.getUsuario().getNome();
+                                long idDaPessoa = loginResp.getUsuario().getId();
 
-                                //  Abrimos o "bloco de notas" (SharedPreferences) e salvamos o nome nela
+                                // 2. Abrimos o SharedPreferences e salvamos AMBOS
                                 android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
                                 android.content.SharedPreferences.Editor editor = prefs.edit();
+
                                 editor.putString("nomeDoUsuario", nomeDaPessoa);
+                                editor.putLong("idDoUsuario", idDaPessoa); // <--- SALVANDO O ID REAL AQUI
+
                                 editor.apply(); // Confirma o salvamento
 
-                                //  Mostra o aviso na tela e vai para a tela principal
+                                // 3. Mostra o aviso e navega para a MainActivity
                                 Toast.makeText(LoginActivity.this, "Bem-vindo(a), " + nomeDaPessoa, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
@@ -78,7 +82,6 @@ public class LoginActivity extends AppCompatActivity {
                                         .show();
                             }
                         } else {
-                            // Se a API retornar status code de erro (ex: 401 Unauthorized)
                             Toast.makeText(LoginActivity.this, "Usuário ou senha inválidos", Toast.LENGTH_SHORT).show();
                         }
                     }
