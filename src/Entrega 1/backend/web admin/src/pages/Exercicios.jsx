@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, PlayCircle, Image as ImageIcon, X } from 'lucide-react';
-import { supabase } from '../supabaseClient'; // Importação do Supabase adicionada!
+import { supabase } from '../supabaseClient'; // Importação do Supabase
 
 export default function Exercicios() {
   // Estados para dados reais do banco
@@ -98,14 +98,37 @@ export default function Exercicios() {
     }
   };
 
-  const handlePrescrever = (e) => {
+  // SALVAR PRESCRIÇÃO REAL NO SUPABASE
+  const handlePrescrever = async (e) => {
     e.preventDefault();
-    // Em uma versão futura, isso faria um insert numa tabela "prescricoes"
-    alert(`Exercício "${exercicioPrescrever.titulo}" prescrito para o paciente selecionado com sucesso!`);
-    setExercicioPrescrever(null);
-    setFormPaciente('');
-    setFormFrequencia('');
-    setFormObservacoes('');
+
+    if (!formPaciente) {
+      alert("Por favor, selecione um paciente.");
+      return;
+    }
+
+    try {
+      // Envia a prescrição para a tabela 'prescricoes' conectando o paciente ao exercício
+      const { error } = await supabase.from('prescricoes').insert([{
+        paciente_id: formPaciente,
+        exercicio_id: exercicioPrescrever.id,
+        frequencia: formFrequencia,
+        observacoes: formObservacoes
+      }]);
+
+      if (error) throw error;
+
+      alert(`Exercício "${exercicioPrescrever.titulo}" prescrito com sucesso!`);
+      
+      // Limpa e fecha o modal
+      setExercicioPrescrever(null);
+      setFormPaciente('');
+      setFormFrequencia('');
+      setFormObservacoes('');
+
+    } catch (error) {
+      alert("Erro ao salvar prescrição: " + error.message);
+    }
   };
 
   const filteredExercicios = exercicios.filter(ex => 
@@ -219,7 +242,6 @@ export default function Exercicios() {
                 <input required type="text" className="input-field" value={formTags} onChange={e => setFormTags(e.target.value)} />
               </div>
               
-              {/* CAMPO DE SELEÇÃO DE ARQUIVO INSERIDO AQUI */}
               <div>
                 <label className="label-text">Selecione o Arquivo (.MP4, .JPG, .PNG)</label>
                 <input 

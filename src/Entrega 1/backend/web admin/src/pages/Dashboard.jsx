@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Users, Activity, LogOut, Dumbbell, ClipboardList } from 'lucide-react';
+import { Users, Activity, LogOut, Dumbbell, ClipboardList, FileCheck, Bell } from 'lucide-react'; // Bell adicionado
 
 export default function Dashboard() {
   const location = useLocation();
@@ -21,7 +21,6 @@ export default function Dashboard() {
   };
 
   return (
-    // A MUDANÇA ESTÁ AQUI NESTA LINHA: height: '100vh' e overflow: 'hidden'
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       
       {/* Sidebar Lateral */}
@@ -45,6 +44,15 @@ export default function Dashboard() {
           <Link to="/dashboard/prontuarios" style={location.pathname.startsWith('/dashboard/prontuarios') ? activeStyle : inactiveStyle}>
             <ClipboardList size={20} /> Prontuários
           </Link>
+          <Link to="/dashboard/prescricoes" style={location.pathname.startsWith('/dashboard/prescricoes') ? activeStyle : inactiveStyle}>
+            <FileCheck size={20} /> Prescrições
+          </Link>
+
+          {/* NOVO LINK: Central de Notificações */}
+          <Link to="/dashboard/notificacoes" style={location.pathname.startsWith('/dashboard/notificacoes') ? activeStyle : inactiveStyle}>
+            <Bell size={20} /> Notificações
+          </Link>
+          
         </nav>
         
         <div style={{ flexGrow: 1 }} />

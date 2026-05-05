@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Search, Plus, Edit2, Trash2, CheckCircle } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react'; // Importei o XCircle para o Inativo
+import bcrypt from 'bcryptjs';
 
 export default function Pacientes() {
   const [pacientes, setPacientes] = useState([]);
@@ -14,12 +15,12 @@ export default function Pacientes() {
   const [formNome, setFormNome] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formSenha, setFormSenha] = useState('');
+  const [formStatus, setFormStatus] = useState('Ativo'); // NOVO: Estado do Status
 
   useEffect(() => {
     fetchPacientes();
   }, []);
 
-  // [READ] Visualizar Lista
   const fetchPacientes = async () => {
     setLoading(true);
     const { data, error } = await supabase.from('pacientes').select('*').order('id', { ascending: false });
@@ -29,21 +30,56 @@ export default function Pacientes() {
     setLoading(false);
   };
 
-  // [CREATE & UPDATE] Adicionar ou Editar Usuário
   const handleSavePaciente = async (e) => {
     e.preventDefault();
+
+    const nomeLimpo = formNome.trim();
+    if (nomeLimpo.split(' ').length < 2) {
+      alert("⚠️ Atenção: Por favor, insira o nome e o sobrenome do paciente.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formEmail)) {
+      alert("⚠️ Atenção: Por favor, insira um e-mail válido (exemplo: paciente@email.com).");
+      return;
+    }
+
     if (isEditing) {
-      // Módulo: Editar informações de um usuário existente
-      const { error } = await supabase.from('pacientes').update({ nome: formNome, email: formEmail, senha: formSenha }).eq('id', currentId);
+      // Cria o objeto base com os dados que sempre vão atualizar
+      let dadosParaAtualizar = { 
+        nome: nomeLimpo, 
+        email: formEmail,
+        status: formStatus // NOVO: Salva o status atualizado
+      };
+
+      // Se o admin digitou uma senha nova, nós criptografamos e adicionamos no update
+      if (formSenha.trim() !== '') {
+        const salt = bcrypt.genSaltSync(10);
+        dadosParaAtualizar.senha = bcrypt.hashSync(formSenha, salt);
+      }
+
+      const { error } = await supabase.from('pacientes').update(dadosParaAtualizar).eq('id', currentId);
+
       if (!error) {
         closeModal();
         fetchPacientes();
       } else {
         alert("Erro ao editar paciente: " + error.message);
       }
+
     } else {
-      // Módulo: Adicionar um novo usuário
-      const { error } = await supabase.from('pacientes').insert([{ nome: formNome, email: formEmail, senha: formSenha }]);
+      // Lógica de Adicionar Novo Usuário
+      const salt = bcrypt.genSaltSync(10);
+      const senhaSegura = bcrypt.hashSync(formSenha, salt);
+
+      const { error } = await supabase.from('pacientes').insert([{ 
+        nome: nomeLimpo, 
+        email: formEmail, 
+        senha: senhaSegura,
+        status: formStatus // NOVO: Salva o status do novo paciente
+      }]);
+
       if (!error) {
         closeModal();
         fetchPacientes();
@@ -53,13 +89,12 @@ export default function Pacientes() {
     }
   };
 
-  // [DELETE] Deletar usuário
   const handleDeletePaciente = async (id, nome) => {
     const confirmDelete = window.confirm(`ATENÇÃO: Tem certeza que deseja DELETAR PERMANENTEMENTE o usuário "${nome}"?`);
     if (confirmDelete) {
       const { error } = await supabase.from('pacientes').delete().eq('id', id);
       if (!error) {
-        fetchPacientes(); // Atualiza a lista na tela
+        fetchPacientes(); 
       } else {
         alert("Erro ao deletar paciente: " + error.message);
       }
@@ -71,7 +106,8 @@ export default function Pacientes() {
     setCurrentId(null);
     setFormNome('');
     setFormEmail('');
-    setFormSenha(''); // Vazio por padrão para obrigar o admin a criar
+    setFormSenha(''); 
+    setFormStatus('Ativo'); // Padrão é nascer Ativo
     setShowModal(true);
   };
 
@@ -80,7 +116,8 @@ export default function Pacientes() {
     setCurrentId(paciente.id);
     setFormNome(paciente.nome);
     setFormEmail(paciente.email);
-    setFormSenha(paciente.senha);
+    setFormStatus(paciente.status || 'Ativo'); // Puxa o status do banco
+    setFormSenha(''); 
     setShowModal(true);
   };
 
@@ -98,10 +135,9 @@ export default function Pacientes() {
       <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '28px', marginBottom: '8px', color: '#0F172A' }}>Gestão de Usuários</h1>
-          <p style={{ color: '#64748B' }}>Visualizar, Adicionar, Editar e Deletar Usuários (CRUD Completo).</p>
+          <p style={{ color: '#64748B' }}>Visualizar, Adicionar, Editar e Deletar Usuários (CRUD Completo e Seguro).</p>
         </div>
         
-        {/* BOTÃO CABEÇALHO ATUALIZADO */}
         <button 
           onClick={openAddModal}
           style={{ 
@@ -163,12 +199,21 @@ export default function Pacientes() {
             ) : (
               filteredPacientes.map((p) => (
                 <tr key={p.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                  <td style={{ padding: '16px 24px', fontWeight: '500' }}>{p.nome}</td>
-                  <td style={{ padding: '16px 24px', color: 'var(--text-muted)' }}>{p.email}</td>
+                  <td style={{ padding: '16px 24px', fontWeight: '500', opacity: p.status === 'Inativo' ? 0.6 : 1 }}>{p.nome}</td>
+                  <td style={{ padding: '16px 24px', color: 'var(--text-muted)', opacity: p.status === 'Inativo' ? 0.6 : 1 }}>{p.email}</td>
                   <td style={{ padding: '16px 24px' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#D1FAE5', color: '#065F46', border: '1px solid #10B981', borderRadius: '24px', fontSize: '12px', fontWeight: '600' }}>
-                      <CheckCircle size={14} /> Ativo
-                    </span>
+                    
+                    {/* NOVO: Renderização Dinâmica do Status */}
+                    {p.status === 'Ativo' ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#D1FAE5', color: '#065F46', border: '1px solid #10B981', borderRadius: '24px', fontSize: '12px', fontWeight: '600' }}>
+                        <CheckCircle size={14} /> Ativo
+                      </span>
+                    ) : (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#F1F5F9', color: '#64748B', border: '1px solid #CBD5E1', borderRadius: '24px', fontSize: '12px', fontWeight: '600' }}>
+                        <XCircle size={14} /> Inativo
+                      </span>
+                    )}
+
                   </td>
                   <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
@@ -201,31 +246,40 @@ export default function Pacientes() {
             <form onSubmit={handleSavePaciente} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <label className="label-text">Nome do Usuário</label>
-                <input required type="text" className="input-field" value={formNome} onChange={e => setFormNome(e.target.value)} />
+                <input required type="text" className="input-field" placeholder="Ex: Maria Silva" value={formNome} onChange={e => setFormNome(e.target.value)} />
               </div>
               <div>
                 <label className="label-text">E-mail (Para Acesso no App)</label>
-                <input required type="email" className="input-field" value={formEmail} onChange={e => setFormEmail(e.target.value)} />
-              </div>
-              <div>
-                <label className="label-text">Senha de Acesso</label>
-                <input required type="text" className="input-field" value={formSenha} onChange={e => setFormSenha(e.target.value)} />
+                <input required type="email" className="input-field" placeholder="exemplo@email.com" value={formEmail} onChange={e => setFormEmail(e.target.value)} />
               </div>
               
-              {/* BOTÕES DO MODAL ATUALIZADOS */}
+              {/* NOVO CAMPO: Seleção de Status */}
+              <div>
+                <label className="label-text">Status do Paciente no Sistema</label>
+                <select className="input-field" value={formStatus} onChange={e => setFormStatus(e.target.value)}>
+                  <option value="Ativo">🟢 Ativo (Em Tratamento)</option>
+                  <option value="Inativo">⚪ Inativo (Alta ou Pausa)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="label-text">Senha de Acesso</label>
+                <input 
+                  required={!isEditing} 
+                  type="password" 
+                  className="input-field" 
+                  placeholder={isEditing ? "Deixe em branco para manter a atual" : "Crie uma senha forte"} 
+                  value={formSenha} 
+                  onChange={e => setFormSenha(e.target.value)} 
+                />
+                {isEditing && <small style={{ color: '#64748B', display: 'block', marginTop: '4px' }}>Apenas digite algo aqui se quiser redefinir a senha do paciente.</small>}
+              </div>
+              
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
                 <button 
                   type="button" 
                   style={{ 
-                    background: '#F1F5F9', 
-                    color: '#64748B', 
-                    border: 'none', 
-                    padding: '10px 20px', 
-                    borderRadius: '8px', 
-                    fontSize: '14px',
-                    fontWeight: '600', 
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    background: '#F1F5F9', color: '#64748B', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s'
                   }} 
                   onMouseOver={(e) => e.currentTarget.style.background = '#E2E8F0'} 
                   onMouseOut={(e) => e.currentTarget.style.background = '#F1F5F9'}
@@ -237,19 +291,7 @@ export default function Pacientes() {
                 <button 
                   type="submit" 
                   style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px', 
-                    background: '#06B6D4', 
-                    color: '#FFFFFF', 
-                    border: 'none', 
-                    padding: '10px 24px', 
-                    borderRadius: '8px', 
-                    fontSize: '14px',
-                    fontWeight: '600', 
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)', 
-                    transition: 'all 0.2s'
+                    display: 'flex', alignItems: 'center', gap: '8px', background: '#06B6D4', color: '#FFFFFF', border: 'none', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)', transition: 'all 0.2s'
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = '#0891B2'} 
                   onMouseOut={(e) => e.currentTarget.style.background = '#06B6D4'}
