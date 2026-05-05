@@ -3,6 +3,7 @@ package com.example.rpgclinicapp.network;
 import com.example.rpgclinicapp.models.AgendaRequest;
 import com.example.rpgclinicapp.models.AgendaResponse;
 import com.example.rpgclinicapp.models.CadastroRequest;
+import com.example.rpgclinicapp.models.CheckinRequest;
 import com.example.rpgclinicapp.models.Exercicio;
 import com.example.rpgclinicapp.models.LoginRequest;
 import com.example.rpgclinicapp.models.LoginResponse;
@@ -20,6 +21,9 @@ public interface ClinicApiService {
     Call<LoginResponse> login(@Body LoginRequest request);
     @GET("/api/exercicios")
     Call<List<Exercicio>> getExercicios();
+
+    @POST("/api/exercicios/checkin")
+    Call<okhttp3.ResponseBody> salvarCheckin(@Body CheckinRequest request);
     @POST("/api/auth/register")
     Call<LoginResponse> cadastrar(@Body CadastroRequest request);
 
