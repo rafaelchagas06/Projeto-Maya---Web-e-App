@@ -59,20 +59,22 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null) {
                             LoginResponse loginResp = response.body();
                             if (loginResp.isSucesso()) {
-                                // 1. Pegamos o Nome e o ID que a API devolveu
+                                // 1. Pegamos os dados que a API devolveu
                                 String nomeDaPessoa = loginResp.getUsuario().getNome();
                                 long idDaPessoa = loginResp.getUsuario().getId();
 
-                                // 2. Abrimos o SharedPreferences e salvamos AMBOS
+                                // 2. Salvamos tudo no SharedPreferences (incluindo e-mail e senha para o Perfil)
                                 android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
                                 android.content.SharedPreferences.Editor editor = prefs.edit();
 
                                 editor.putString("nomeDoUsuario", nomeDaPessoa);
-                                editor.putLong("idDoUsuario", idDaPessoa); // <--- SALVANDO O ID REAL AQUI
+                                editor.putLong("idDoUsuario", idDaPessoa);
+                                editor.putString("emailDoUsuario", email); // <--- SALVANDO O E-MAIL
+                                editor.putString("senhaDoUsuario", senha); // <--- SALVANDO A SENHA
 
-                                editor.apply(); // Confirma o salvamento
+                                editor.apply();
 
-                                // 3. Mostra o aviso e navega para a MainActivity
+                                // 3. Navega para a MainActivity
                                 Toast.makeText(LoginActivity.this, "Bem-vindo(a), " + nomeDaPessoa, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);

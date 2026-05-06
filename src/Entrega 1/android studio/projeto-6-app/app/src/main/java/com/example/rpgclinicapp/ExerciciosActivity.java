@@ -1,7 +1,9 @@
 package com.example.rpgclinicapp;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -26,25 +28,25 @@ public class ExerciciosActivity extends AppCompatActivity {
 
     private RecyclerView rvExercicios;
     private ExercicioAdapter adapter;
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Oculta a Action Bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
         setContentView(R.layout.activity_exercicios);
 
-        // 1. Configurar o RecyclerView
+        dbHelper = new DatabaseHelper(this);
+
         rvExercicios = findViewById(R.id.rv_exercicios);
         if (rvExercicios != null) {
             rvExercicios.setLayoutManager(new LinearLayoutManager(this));
         }
 
-        // 2. Buscar exercícios e configurar navegação
         buscarExercicios();
         configurarNavegacao();
     }
@@ -55,12 +57,9 @@ public class ExerciciosActivity extends AppCompatActivity {
             public void onResponse(Call<List<Exercicio>> call, Response<List<Exercicio>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Exercicio> lista = response.body();
-
-                    // Configura o Adapter passando o clique para o método onMarcarCompleto
                     adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
                         onMarcarCompleto(view, exercicio);
                     });
-
                     rvExercicios.setAdapter(adapter);
                 } else {
                     Toast.makeText(ExerciciosActivity.this, "Erro ao carregar exercícios", Toast.LENGTH_SHORT).show();
@@ -93,9 +92,17 @@ public class ExerciciosActivity extends AppCompatActivity {
         if (navProgresso != null) {
             navProgresso.setOnClickListener(v -> startActivity(new Intent(this, ProgressoActivity.class)));
         }
+
+        // --- ADICIONADO: NAVEGAÇÃO PARA PERFIL ---
+        LinearLayout navPerfil = findViewById(R.id.nav_perfil);
+        if (navPerfil != null) {
+            navPerfil.setOnClickListener(v -> {
+                Intent intent = new Intent(this, PerfilActivity.class);
+                startActivity(intent);
+            });
+        }
     }
 
-    // Método que abre o Dialog e envia os dados para o Supabase via Backend
     public void onMarcarCompleto(View view, Exercicio exercicio) {
         android.app.Dialog dialog = new android.app.Dialog(this);
         dialog.setContentView(R.layout.dialog_registro_execucao);
@@ -118,40 +125,34 @@ public class ExerciciosActivity extends AppCompatActivity {
             int nivelDor = sbDor.getProgress();
             String nomeEx = (exercicio != null) ? exercicio.getNome() : "Exercício";
 
-            // --- RECUPERA O NOME E ID DO USUÁRIO QUE FEZ LOGIN ---
             SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
-
-            // Agora buscando o Nome e o ID salvos dinamicamente no LoginActivity
             String nomeUsuarioLogado = prefs.getString("nomeDoUsuario", "Paciente");
             long idUsuarioLogado = prefs.getLong("idDoUsuario", 0);
 
-            // 1. Criar o objeto de Checkin com dados DINÂMICOS
             CheckinRequest checkin = new CheckinRequest(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
 
-            // 2. Enviar para o Render (que salva no Supabase)
             RetrofitClient.getApiService().salvarCheckin(checkin).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(ExerciciosActivity.this, "✅ Registro enviado para: " + nomeUsuarioLogado, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ExerciciosActivity.this, "✅ Registro enviado com sucesso!", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(ExerciciosActivity.this, "❌ Erro ao salvar no prontuário. Verifique o login.", Toast.LENGTH_SHORT).show();
+                        salvarCheckinNoSQLite(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(ExerciciosActivity.this, "⚠️ Erro de conexão com o servidor", Toast.LENGTH_SHORT).show();
+                    salvarCheckinNoSQLite(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
+                    Toast.makeText(ExerciciosActivity.this, "⚠️ Offline: Salvo localmente no celular", Toast.LENGTH_SHORT).show();
                 }
             });
 
-            // 3. Atualizar progresso local (Círculo da Home)
             int concluidosAtual = prefs.getInt("exerciciosConcluidos", 0);
             prefs.edit().putInt("exerciciosConcluidos", concluidosAtual + 1).apply();
 
             dialog.dismiss();
 
-            // 4. Mudar visual do botão para "Completo"
             if (view instanceof android.widget.TextView) {
                 android.widget.TextView tv = (android.widget.TextView) view;
                 tv.setText("Completo ✓");
@@ -162,5 +163,21 @@ public class ExerciciosActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void salvarCheckinNoSQLite(long idPaciente, String nomePaciente, String exercicio, int dor) {
+        try {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("paciente_id", idPaciente);
+            values.put("paciente_nome", nomePaciente);
+            values.put("exercicio_nome", exercicio);
+            values.put("dor", dor);
+
+            db.insert("checkins_pendentes", null, values);
+            db.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
