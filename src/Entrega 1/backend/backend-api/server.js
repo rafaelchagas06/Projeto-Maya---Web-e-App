@@ -14,7 +14,22 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// 1. ROTA DE CONSULTA (O que faz os exercícios aparecerem no celular)
+// Buscar evolução/prontuário do paciente para a tela de progresso
+app.get('/api/prontuarios/:paciente_id', async (req, res) => {
+    const { paciente_id } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT * FROM prontuarios WHERE paciente_id = $1 ORDER BY data DESC',
+            [paciente_id]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erro ao buscar prontuário' });
+    }
+});
+
+//  ROTA DE CONSULTA (O que faz os exercícios aparecerem no celular)
 app.get('/api/exercicios', (req, res) => {
     res.json([
         {
@@ -38,7 +53,7 @@ app.get('/api/exercicios', (req, res) => {
     ]);
 });
 
-// 2. ROTA DE CHECK-IN (O que envia a dor para o seu Web Admin/Supabase)
+//  ROTA DE CHECK-IN (O que envia a dor para o seu Web Admin/Supabase)
 app.post('/api/exercicios/checkin', async (req, res) => {
     const { paciente_id, paciente_nome, exercicio_nome, dor } = req.body;
 
