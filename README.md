@@ -8,21 +8,13 @@
 
 # 💡 Projeto AlinhaTech  
 
-## **Maya Yamamoto RPG**
+## 🩺 Maya Yamamoto RPG
 
----
 
-## 👥 Integrantes
+## 👥 Integrantes: [Breno Sales Colaneri](https://www.linkedin.com/in/breno-sales-colaneri-231b59322/), [Guilherme Leão Rodrigues](https://www.linkedin.com/in/guilherme-le%C3%A3o-277053347/), [Izabelli Ribeiro dos Santos](https://www.linkedin.com/in/izabelliribeiro/) e [Rafael Chagas Silva](https://www.linkedin.com/in/rafael-chagas-0648a6349/).
 
-- [Breno Sales Colaneri](https://www.linkedin.com/in/breno-sales-colaneri-231b59322/)  
-- [Guilherme Leão Rodrigues](https://www.linkedin.com/in/guilherme-le%C3%A3o-277053347/)  
-- [Izabelli Ribeiro dos Santos](https://www.linkedin.com/in/izabelliribeiro/)  
-- [Rafael Chagas Silva](https://www.linkedin.com/in/rafael-chagas-0648a6349/)
 
----
-
-## 👨‍🏫 Professores Orientadores
-<a href="https://www.linkedin.com/school/fecap/posts/?feedView=all">Kátia Milani Lara Bossi</a>, <a href="https://www.linkedin.com/in/marco-aurelio-lima-barbosa/">Marco Aurelio Lima Barbosa</a>, <a href="https://www.linkedin.com/in/rodrigo-da-rosa-phd/">Rodrigo da Rosa</a>, <a                                                           href="https://www.linkedin.com/in/victorbarq/">Victor Rosetti de Quiroz</a>
+## 👨‍🏫 Professores Orientadores: [Kátia Milani Lara Bossi](https://www.linkedin.com/school/fecap/posts/?feedView=all), [Marco Aurelio Lima Barbosa](https://www.linkedin.com/in/marco-aurelio-lima-barbosa/), [Rodrigo da Rosa](https://www.linkedin.com/in/rodrigo-da-rosa-phd/) e [Victor Rosetti de Quiroz](https://www.linkedin.com/in/victorbarq/).
 
 ---
 
