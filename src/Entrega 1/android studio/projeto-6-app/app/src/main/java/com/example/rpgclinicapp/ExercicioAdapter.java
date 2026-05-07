@@ -55,13 +55,30 @@ public class ExercicioAdapter extends RecyclerView.Adapter<ExercicioAdapter.View
         if (urlDaMidia != null && !urlDaMidia.isEmpty()) {
             holder.imgExercicio.setVisibility(View.VISIBLE); // Garante que a foto aparece
 
-            // O Glide vai na internet, baixa a foto e coloca na ImageView
+            // O Glide vai na internet, baixa a foto e salva na memória do celular (cache)
             Glide.with(holder.itemView.getContext())
                     .load(urlDaMidia)
                     .placeholder(android.R.color.darker_gray) // Fundo cinza provisório enquanto carrega
                     .error(android.R.color.holo_red_light)    // Fica vermelho caso o link esteja quebrado
                     .centerCrop() // Ajusta a imagem para não ficar achatada
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL) // <-- SALVA NO CACHE
                     .into(holder.imgExercicio);
+
+            // --- NOVO: ABRIR O VÍDEO AO CLICAR NA IMAGEM ---
+            holder.imgExercicio.setOnClickListener(v -> {
+                android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+                intent.setDataAndType(android.net.Uri.parse(urlDaMidia), "video/*");
+
+                try {
+                    // Tenta abrir no player de vídeo nativo do celular
+                    holder.itemView.getContext().startActivity(intent);
+                } catch (Exception e) {
+                    // Se der erro (ex: celular sem player de vídeo), abre no navegador normal
+                    intent.setData(android.net.Uri.parse(urlDaMidia));
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            });
+
         } else {
             // Se o exercício não tiver foto no banco de dados, esconde o espaço vazio
             holder.imgExercicio.setVisibility(View.GONE);
@@ -69,6 +86,9 @@ public class ExercicioAdapter extends RecyclerView.Adapter<ExercicioAdapter.View
             // Limpa a foto anterior da memória do Android para evitar o bug de reciclagem
             Glide.with(holder.itemView.getContext()).clear(holder.imgExercicio);
             holder.imgExercicio.setImageDrawable(null);
+
+            // Remove o clique caso não tenha imagem/vídeo
+            holder.imgExercicio.setOnClickListener(null);
         }
         // --- FIM DA LÓGICA DA IMAGEM ---
 
