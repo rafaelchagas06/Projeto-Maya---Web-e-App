@@ -8,21 +8,13 @@
 
 # 💡 Projeto AlinhaTech  
 
-## **Maya Yamamoto RPG**
+## 🩺 Maya Yamamoto RPG
 
----
 
-## 👥 Integrantes
+## 👥 Integrantes: [Breno Sales Colaneri](https://www.linkedin.com/in/breno-sales-colaneri-231b59322/), [Guilherme Leão Rodrigues](https://www.linkedin.com/in/guilherme-le%C3%A3o-277053347/), [Izabelli Ribeiro dos Santos](https://www.linkedin.com/in/izabelliribeiro/) e [Rafael Chagas Silva](https://www.linkedin.com/in/rafael-chagas-0648a6349/).
 
-- [Breno Sales Colaneri](https://www.linkedin.com/in/breno-sales-colaneri-231b59322/)  
-- [Guilherme Leão Rodrigues](https://www.linkedin.com/in/guilherme-le%C3%A3o-277053347/)  
-- [Izabelli Ribeiro dos Santos](https://www.linkedin.com/in/izabelliribeiro/)  
-- [Rafael Chagas Silva](https://www.linkedin.com/in/rafael-chagas-0648a6349/)
 
----
-
-## 👨‍🏫 Professores Orientadores
-<a href="https://www.linkedin.com/school/fecap/posts/?feedView=all">Kátia Milani Lara Bossi</a>, <a href="https://www.linkedin.com/in/marco-aurelio-lima-barbosa/">Marco Aurelio Lima Barbosa</a>, <a href="https://www.linkedin.com/in/rodrigo-da-rosa-phd/">Rodrigo da Rosa</a>, <a                                                           href="https://www.linkedin.com/in/victorbarq/">Victor Rosetti de Quiroz</a>
+## 👨‍🏫 Professores Orientadores: [Kátia Milani Lara Bossi](https://www.linkedin.com/school/fecap/posts/?feedView=all), [Marco Aurelio Lima Barbosa](https://www.linkedin.com/in/marco-aurelio-lima-barbosa/), [Rodrigo da Rosa](https://www.linkedin.com/in/rodrigo-da-rosa-phd/) e [Victor Rosetti de Quiroz](https://www.linkedin.com/in/victorbarq/).
 
 ---
 
@@ -150,7 +142,7 @@ Coloque código do prompt de comnando se for necessário
 
 ## 📋 Licença/License
 
-Utilize o link <https://chooser-beta.creativecommons.org/> para fazer uma licença CC BY 4.0.
+<a href="https://example.com">AlinhaTech APP</a> © 2026 by <a href="https://example.com">AlinhaTech</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
 
 ---
 
@@ -158,10 +150,12 @@ Utilize o link <https://chooser-beta.creativecommons.org/> para fazer uma licen�
 
 Aqui estão as referências usadas no projeto.
 
-1. Como criar tela de login - HTTPS://WWW.YOUTUBE.COM/WATCH?V=OXIUT0CAP_M
+- <a href= "https://www.youtube.com/watch?v=OxiUt0CAp_M">Como criar tela de login</a>
 
-2. Como adicionar vídeo no Android Studio - HTTPS://WWW.YOUTUBE.COM/WATCH?V=WK1ISBLEO-0
+- <a href= "https://www.youtube.com/watch?v=wK1IsBleO-0">Como adicionar vídeo no Android Studio</a>
 
-3. Como criar ProgressBar - HTTPS://WWW.YOUTUBE.COM/WATCH?V=GMZE5--CCMO
+- <a href= "https://www.youtube.com/watch?v=GMzE5--ccMo">Como criar ProgressBar</a>
 
-4. Como implementar backend com Render - HTTPS://WWW.YOUTUBE.COM/WATCH?V=A2VOUYZZMCW</a>
+- <a href= "https://www.youtube.com/watch?v=A2VoUyZZMCw">Como implementar backend com Render</a>
+
+- <a href= "https://www.ibge.gov.br/estatisticas/sociais/saude/17270-pnad-continua.html">IBGE. Uso de Internet, Televisão e Celular no Brasil (PNAD Contínua)</a>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Search, Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react'; // Importei o XCircle para o Inativo
+import { Search, Plus, Edit2, Trash2, CheckCircle, XCircle } from 'lucide-react'; 
 import bcrypt from 'bcryptjs';
 
 export default function Pacientes() {
@@ -15,7 +15,7 @@ export default function Pacientes() {
   const [formNome, setFormNome] = useState('');
   const [formEmail, setFormEmail] = useState('');
   const [formSenha, setFormSenha] = useState('');
-  const [formStatus, setFormStatus] = useState('Ativo'); // NOVO: Estado do Status
+  const [formStatus, setFormStatus] = useState('Ativo'); 
 
   useEffect(() => {
     fetchPacientes();
@@ -45,18 +45,23 @@ export default function Pacientes() {
       return;
     }
 
+    // FUNÇÃO PARA GERAR O HASH ESPECÍFICO $2a$12$
+    const gerarHash2a12 = (senha) => {
+        const salt = bcrypt.genSaltSync(12);
+        const hash = bcrypt.hashSync(senha, salt);
+        // Força a substituição de $2b$ por $2a$ caso a biblioteca gere $2b$
+        return hash.replace(/^\$2b\$/, '$2a$');
+    };
+
     if (isEditing) {
-      // Cria o objeto base com os dados que sempre vão atualizar
       let dadosParaAtualizar = { 
         nome: nomeLimpo, 
         email: formEmail,
-        status: formStatus // NOVO: Salva o status atualizado
+        status: formStatus 
       };
 
-      // Se o admin digitou uma senha nova, nós criptografamos e adicionamos no update
       if (formSenha.trim() !== '') {
-        const salt = bcrypt.genSaltSync(10);
-        dadosParaAtualizar.senha = bcrypt.hashSync(formSenha, salt);
+        dadosParaAtualizar.senha = gerarHash2a12(formSenha);
       }
 
       const { error } = await supabase.from('pacientes').update(dadosParaAtualizar).eq('id', currentId);
@@ -69,15 +74,15 @@ export default function Pacientes() {
       }
 
     } else {
-      // Lógica de Adicionar Novo Usuário
-      const salt = bcrypt.genSaltSync(10);
-      const senhaSegura = bcrypt.hashSync(formSenha, salt);
+      if (!formSenha) return alert("Por favor, defina uma senha para o novo usuário.");
+
+      const senhaSegura = gerarHash2a12(formSenha);
 
       const { error } = await supabase.from('pacientes').insert([{ 
         nome: nomeLimpo, 
         email: formEmail, 
         senha: senhaSegura,
-        status: formStatus // NOVO: Salva o status do novo paciente
+        status: formStatus 
       }]);
 
       if (!error) {
@@ -107,7 +112,7 @@ export default function Pacientes() {
     setFormNome('');
     setFormEmail('');
     setFormSenha(''); 
-    setFormStatus('Ativo'); // Padrão é nascer Ativo
+    setFormStatus('Ativo'); 
     setShowModal(true);
   };
 
@@ -116,7 +121,7 @@ export default function Pacientes() {
     setCurrentId(paciente.id);
     setFormNome(paciente.nome);
     setFormEmail(paciente.email);
-    setFormStatus(paciente.status || 'Ativo'); // Puxa o status do banco
+    setFormStatus(paciente.status || 'Ativo'); 
     setFormSenha(''); 
     setShowModal(true);
   };
@@ -162,7 +167,6 @@ export default function Pacientes() {
         </button>
       </header>
 
-      {/* Busca */}
       <div className="glass-card" style={{ padding: '24px', marginBottom: '24px', display: 'flex', gap: '16px', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1 }}>
           <Search size={20} style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-muted)' }} />
@@ -180,7 +184,6 @@ export default function Pacientes() {
         </div>
       </div>
 
-      {/* Tabela */}
       <div className="glass-card" style={{ overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
@@ -202,8 +205,6 @@ export default function Pacientes() {
                   <td style={{ padding: '16px 24px', fontWeight: '500', opacity: p.status === 'Inativo' ? 0.6 : 1 }}>{p.nome}</td>
                   <td style={{ padding: '16px 24px', color: 'var(--text-muted)', opacity: p.status === 'Inativo' ? 0.6 : 1 }}>{p.email}</td>
                   <td style={{ padding: '16px 24px' }}>
-                    
-                    {/* NOVO: Renderização Dinâmica do Status */}
                     {p.status === 'Ativo' ? (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 12px', background: '#D1FAE5', color: '#065F46', border: '1px solid #10B981', borderRadius: '24px', fontSize: '12px', fontWeight: '600' }}>
                         <CheckCircle size={14} /> Ativo
@@ -213,7 +214,6 @@ export default function Pacientes() {
                         <XCircle size={14} /> Inativo
                       </span>
                     )}
-
                   </td>
                   <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
@@ -238,7 +238,6 @@ export default function Pacientes() {
         </table>
       </div>
 
-      {/* Modal CRUD (Adicionar / Editar) */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div className="glass-card" style={{ padding: '32px', width: '100%', maxWidth: '500px', background: '#FFF' }}>
@@ -253,7 +252,6 @@ export default function Pacientes() {
                 <input required type="email" className="input-field" placeholder="exemplo@email.com" value={formEmail} onChange={e => setFormEmail(e.target.value)} />
               </div>
               
-              {/* NOVO CAMPO: Seleção de Status */}
               <div>
                 <label className="label-text">Status do Paciente no Sistema</label>
                 <select className="input-field" value={formStatus} onChange={e => setFormStatus(e.target.value)}>
@@ -278,9 +276,7 @@ export default function Pacientes() {
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
                 <button 
                   type="button" 
-                  style={{ 
-                    background: '#F1F5F9', color: '#64748B', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s'
-                  }} 
+                  style={{ background: '#F1F5F9', color: '#64748B', border: 'none', padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }} 
                   onMouseOver={(e) => e.currentTarget.style.background = '#E2E8F0'} 
                   onMouseOut={(e) => e.currentTarget.style.background = '#F1F5F9'}
                   onClick={closeModal}
@@ -290,9 +286,7 @@ export default function Pacientes() {
 
                 <button 
                   type="submit" 
-                  style={{ 
-                    display: 'flex', alignItems: 'center', gap: '8px', background: '#06B6D4', color: '#FFFFFF', border: 'none', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)', transition: 'all 0.2s'
-                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#06B6D4', color: '#FFFFFF', border: 'none', padding: '10px 24px', borderRadius: '8px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)', transition: 'all 0.2s' }}
                   onMouseOver={(e) => e.currentTarget.style.background = '#0891B2'} 
                   onMouseOut={(e) => e.currentTarget.style.background = '#06B6D4'}
                 >
