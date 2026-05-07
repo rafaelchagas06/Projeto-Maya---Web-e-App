@@ -52,25 +52,37 @@ public class ExerciciosActivity extends AppCompatActivity {
     }
 
     private void buscarExercicios() {
-        RetrofitClient.getApiService().getExercicios().enqueue(new Callback<List<Exercicio>>() {
-            @Override
-            public void onResponse(Call<List<Exercicio>> call, Response<List<Exercicio>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Exercicio> lista = response.body();
-                    adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
-                        onMarcarCompleto(view, exercicio);
-                    });
-                    rvExercicios.setAdapter(adapter);
-                } else {
-                    Toast.makeText(ExerciciosActivity.this, "Erro ao carregar exercícios", Toast.LENGTH_SHORT).show();
-                }
-            }
+        // 1. Resgata o ID do usuário salvo no login
+        SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+        long meuId = prefs.getLong("idDoUsuario", -1);
 
-            @Override
-            public void onFailure(Call<List<Exercicio>> call, Throwable t) {
-                Toast.makeText(ExerciciosActivity.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+        if (meuId != -1) {
+            // 2. Passa o ID na chamada da API
+            RetrofitClient.getApiService().getExercicios(meuId).enqueue(new Callback<List<Exercicio>>() {
+                @Override
+                public void onResponse(Call<List<Exercicio>> call, Response<List<Exercicio>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Exercicio> lista = response.body();
+
+                        // Atualiza o adapter com a lista retornada pelo banco
+                        adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
+                            onMarcarCompleto(view, exercicio);
+                        });
+                        rvExercicios.setAdapter(adapter);
+
+                    } else {
+                        Toast.makeText(ExerciciosActivity.this, "Nenhum exercício encontrado.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Exercicio>> call, Throwable t) {
+                    Toast.makeText(ExerciciosActivity.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Erro: Usuário não identificado.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void configurarNavegacao() {
@@ -93,7 +105,6 @@ public class ExerciciosActivity extends AppCompatActivity {
             navProgresso.setOnClickListener(v -> startActivity(new Intent(this, ProgressoActivity.class)));
         }
 
-        // --- ADICIONADO: NAVEGAÇÃO PARA PERFIL ---
         LinearLayout navPerfil = findViewById(R.id.nav_perfil);
         if (navPerfil != null) {
             navPerfil.setOnClickListener(v -> {
@@ -123,7 +134,8 @@ public class ExerciciosActivity extends AppCompatActivity {
 
         btnSalvar.setOnClickListener(v -> {
             int nivelDor = sbDor.getProgress();
-            String nomeEx = (exercicio != null) ? exercicio.getNome() : "Exercício";
+            // Puxa o nome real do exercício vindo do banco (titulo)
+            String nomeEx = (exercicio != null && exercicio.getNome() != null) ? exercicio.getNome() : "Exercício";
 
             SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
             String nomeUsuarioLogado = prefs.getString("nomeDoUsuario", "Paciente");

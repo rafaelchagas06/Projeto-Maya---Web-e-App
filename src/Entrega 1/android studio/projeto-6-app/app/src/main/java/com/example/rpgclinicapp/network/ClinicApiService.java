@@ -21,11 +21,14 @@ public interface ClinicApiService {
 
     @POST("/api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
-    @GET("/api/exercicios")
-    Call<List<Exercicio>> getExercicios();
+
+    // --- MUDANÇA AQUI: A rota agora exige o ID do paciente na URL ---
+    @GET("/api/exercicios/{paciente_id}")
+    Call<List<Exercicio>> getExercicios(@Path("paciente_id") long pacienteId);
 
     @POST("/api/exercicios/checkin")
     Call<okhttp3.ResponseBody> salvarCheckin(@Body CheckinRequest request);
+
     @POST("/api/auth/register")
     Call<LoginResponse> cadastrar(@Body CadastroRequest request);
 
