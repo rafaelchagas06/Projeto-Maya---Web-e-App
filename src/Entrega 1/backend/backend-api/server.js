@@ -29,31 +29,27 @@ app.get('/api/prontuarios/:paciente_id', async (req, res) => {
     }
 });
 
-//  ROTA DE CONSULTA (O que faz os exercícios aparecerem no celular)
-app.get('/api/exercicios', (req, res) => {
-    res.json([
-        {
-            "id": 1,
-            "nome": "Alongamento Cervical",
-            "repeticoes": "3 séries de 15s",
-            "descricao": "Puxe levemente a cabeça para a direita e depois para a esquerda."
-        },
-        {
-            "id": 2,
-            "nome": "Prancha Isométrica",
-            "repeticoes": "3 séries de 30s",
-            "descricao": "Mantenha o abdômen contraído e a coluna reta."
-        },
-        {
-            "id": 3,
-            "nome": "Rotação de Tronco",
-            "repeticoes": "10 repetições cada lado",
-            "descricao": "Gire o tronco suavemente mantendo o quadril fixo."
-        }
-    ]);
+// NOVA ROTA DE EXERCÍCIOS: Busca apenas os exercícios prescritos para o paciente logado
+// No Android, você deve chamar: /api/exercicios/8 (substituindo o 8 pelo ID do paciente)
+app.get('/api/exercicios/:paciente_id', async (req, res) => {
+    const { paciente_id } = req.params;
+    try {
+        const query = `
+            SELECT e.* FROM exercicios e
+            INNER JOIN prescricoes p ON e.id = p.exercicio_id
+            WHERE p.paciente_id = $1
+        `;
+        const result = await pool.query(query, [paciente_id]);
+        
+        // Retorna a lista real do banco. Se não houver prescrição, retorna []
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao buscar exercícios prescritos:', err);
+        res.status(500).json({ error: 'Erro ao buscar exercícios no banco' });
+    }
 });
 
-//  ROTA DE CHECK-IN (O que envia a dor para o seu Web Admin/Supabase)
+// ROTA DE CHECK-IN
 app.post('/api/exercicios/checkin', async (req, res) => {
     const { paciente_id, paciente_nome, exercicio_nome, dor } = req.body;
 
@@ -74,7 +70,7 @@ app.post('/api/exercicios/checkin', async (req, res) => {
     }
 });
 
-// Rotas de Autenticação e Agenda (seus arquivos separados)
+// Rotas de Autenticação e Agenda
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/paciente', require('./routes/pacienteRoutes'));
 app.use('/api/agendamentos', require('./routes/agendaRoutes'));
