@@ -19,7 +19,7 @@ public class Exercicio {
 
     // --- PREPARANDO PARA A IMAGEM ---
     // Substitua "url_imagem" pelo nome EXATO da coluna que guarda o link da foto/vídeo no Supabase
-    @SerializedName("url_imagem")
+    @SerializedName("url")
     private String urlImagem;
 
 
