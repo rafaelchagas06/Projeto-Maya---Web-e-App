@@ -1,11 +1,19 @@
 package com.example.rpgclinicapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,38 +59,34 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // Recupera os dados que você salvou na ExerciciosActivity
-        android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
         int feitos = prefs.getInt("exerciciosConcluidos", 0);
 
-        // Defini 3 como exemplo porque você disse que a Maya colocou 3 exercícios
-        // Se ela colocar mais, mude esse 3 para o número total.
+        // Exemplo: 3 exercícios totais definidos pela clínica
         int total = 3;
 
         // Atualiza a interface com os dados reais salvos
         atualizarInterfaceProgresso(feitos, total);
+
+        // Atualiza a saudação caso o nome tenha mudado
+        configurarSaudacaoEData();
     }
 
     // --- Função para atualizar o Círculo e os Textos ---
     private void atualizarInterfaceProgresso(int concluidos, int total) {
-        if (total <= 0) return; // Evita divisão por zero
+        if (total <= 0) return;
 
-        // Calcula a porcentagem
         int porcentagem = (concluidos * 100) / total;
-
-        // Garante que a porcentagem não passe de 100%
         if (porcentagem > 100) porcentagem = 100;
 
-        // Atualiza a barra visual
         if (progressCircular != null) {
             progressCircular.setProgress(porcentagem);
         }
 
-        // Atualiza o texto "0%"
         if (textPorcentagemCentral != null) {
             textPorcentagemCentral.setText(porcentagem + "%");
         }
 
-        // Atualiza o contador "0/10"
         if (textContadorSuperior != null) {
             textContadorSuperior.setText(concluidos + "/" + total);
         }
@@ -93,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
         TextView textData = findViewById(R.id.textData);
 
         if (textSaudacao != null && textData != null) {
-            java.util.Calendar calendario = java.util.Calendar.getInstance();
-            int horaAtual = calendario.get(java.util.Calendar.HOUR_OF_DAY);
+            Calendar calendario = Calendar.getInstance();
+            int horaAtual = calendario.get(Calendar.HOUR_OF_DAY);
             String saudacao;
 
             if (horaAtual >= 6 && horaAtual < 12) {
@@ -105,13 +109,13 @@ public class MainActivity extends AppCompatActivity {
                 saudacao = "Boa noite";
             }
 
-            android.content.SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
             String nomeUsuario = prefs.getString("nomeDoUsuario", "Paciente");
 
             textSaudacao.setText(saudacao + ", " + nomeUsuario + "!");
 
-            java.text.SimpleDateFormat formatadorData = new java.text.SimpleDateFormat("EEEE, dd 'de' MMMM", new java.util.Locale("pt", "BR"));
-            String dataAtual = formatadorData.format(new java.util.Date());
+            SimpleDateFormat formatadorData = new SimpleDateFormat("EEEE, dd 'de' MMMM", new Locale("pt", "BR"));
+            String dataAtual = formatadorData.format(new Date());
             dataAtual = dataAtual.substring(0, 1).toUpperCase() + dataAtual.substring(1) + ".";
 
             textData.setText(dataAtual);
@@ -129,48 +133,48 @@ public class MainActivity extends AppCompatActivity {
             final TextView tvDor = findViewById(idsBotoesDor[i]);
 
             if (tvDor != null) {
-                tvDor.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        nivelDorSelecionado = nivel;
-                        Toast.makeText(MainActivity.this, "Dor nível " + nivel, Toast.LENGTH_SHORT).show();
+                tvDor.setOnClickListener(v -> {
+                    nivelDorSelecionado = nivel;
+                    Toast.makeText(MainActivity.this, "Dor nível " + nivel, Toast.LENGTH_SHORT).show();
 
-                        for (int id : idsBotoesDor) {
-                            View b = findViewById(id);
-                            if (b != null) {
-                                b.setScaleX(1.0f);
-                                b.setScaleY(1.0f);
-                                b.setAlpha(0.6f);
-                            }
+                    for (int id : idsBotoesDor) {
+                        View b = findViewById(id);
+                        if (b != null) {
+                            b.setScaleX(1.0f);
+                            b.setScaleY(1.0f);
+                            b.setAlpha(0.6f);
                         }
-                        v.setScaleX(1.2f);
-                        v.setScaleY(1.2f);
-                        v.setAlpha(1.0f);
                     }
+                    v.setScaleX(1.2f);
+                    v.setScaleY(1.2f);
+                    v.setAlpha(1.0f);
                 });
             }
         }
     }
 
     private void configurarNavegacao() {
-        android.widget.LinearLayout navAgenda = findViewById(R.id.nav_agenda);
+        LinearLayout navAgenda = findViewById(R.id.nav_agenda);
         if (navAgenda != null) {
-            navAgenda.setOnClickListener(v -> {
-                startActivity(new android.content.Intent(MainActivity.this, AgendaActivity.class));
-            });
+            navAgenda.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AgendaActivity.class)));
         }
 
-        android.widget.LinearLayout navExercicios = findViewById(R.id.nav_exercicios);
+        LinearLayout navExercicios = findViewById(R.id.nav_exercicios);
         if (navExercicios != null) {
-            navExercicios.setOnClickListener(v -> {
-                startActivity(new android.content.Intent(MainActivity.this, ExerciciosActivity.class));
-            });
+            navExercicios.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ExerciciosActivity.class)));
         }
 
-        android.widget.LinearLayout navProgresso = findViewById(R.id.nav_progresso);
+        LinearLayout navProgresso = findViewById(R.id.nav_progresso);
         if (navProgresso != null) {
-            navProgresso.setOnClickListener(v -> {
-                startActivity(new android.content.Intent(MainActivity.this, ProgressoActivity.class));
+            navProgresso.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ProgressoActivity.class)));
+        }
+
+        // --- ADICIONADO: NAVEGAÇÃO PARA A TELA DE PERFIL ---
+        LinearLayout navPerfil = findViewById(R.id.nav_perfil);
+        if (navPerfil != null) {
+            navPerfil.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, PerfilActivity.class);
+                startActivity(intent);
             });
         }
     }
@@ -198,16 +202,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void agendarLembreteDiario() {
         android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
-        android.content.Intent intent = new android.content.Intent(this, LembreteReceiver.class);
+        Intent intent = new Intent(this, LembreteReceiver.class);
         android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(this, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE);
 
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 10);
-        calendar.set(java.util.Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 0);
 
         if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
-            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1);
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
 
         try {

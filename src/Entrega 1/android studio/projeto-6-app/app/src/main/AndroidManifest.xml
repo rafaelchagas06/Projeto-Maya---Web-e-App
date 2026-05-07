@@ -17,6 +17,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.RPGClinicApp">
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -25,21 +26,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
         <activity
             android:name=".AgendaActivity"
             android:exported="false" />
+
         <activity
             android:name=".ExerciciosActivity"
             android:exported="false" />
+
         <activity
             android:name=".ProgressoActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".PerfilActivity"
+            android:exported="false" />
+
         <activity
             android:name=".RecuperarSenhaActivity"
             android:exported="false" />
+
         <receiver android:name=".LembreteReceiver" android:exported="false" />
     </application>
 
