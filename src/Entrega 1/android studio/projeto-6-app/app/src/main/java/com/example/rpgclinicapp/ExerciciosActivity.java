@@ -64,6 +64,12 @@ public class ExerciciosActivity extends AppCompatActivity {
                     if (response.isSuccessful() && response.body() != null) {
                         List<Exercicio> lista = response.body();
 
+                        // --- ADICIONADO: Salva o tamanho da lista (total) na memória do celular ---
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("totalExercicios", lista.size());
+                        editor.apply();
+                        // --------------------------------------------------------------------------
+
                         // Atualiza o adapter com a lista retornada pelo banco
                         adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
                             onMarcarCompleto(view, exercicio);

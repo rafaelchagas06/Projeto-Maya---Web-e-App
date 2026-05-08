@@ -4,7 +4,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.MediaController; // <-- Importação do controlador de vídeo
 import android.widget.TextView;
+import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,7 +29,6 @@ public class ExercicioAdapter extends RecyclerView.Adapter<ExercicioAdapter.View
         this.listener = listener;
     }
 
-    // Método útil caso você precise atualizar a lista depois
     public void setExercicios(List<Exercicio> novosExercicios) {
         this.lista = novosExercicios;
         notifyDataSetChanged();
@@ -44,55 +45,62 @@ public class ExercicioAdapter extends RecyclerView.Adapter<ExercicioAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Exercicio ex = lista.get(position);
 
-        // Verifica se os textos não são nulos antes de tentar preencher
         if (ex.getNome() != null) holder.tvNome.setText(ex.getNome());
         if (ex.getRepeticoes() != null) holder.tvRepeticoes.setText(ex.getRepeticoes());
         if (ex.getDescricao() != null) holder.tvDescricao.setText(ex.getDescricao());
 
-        // --- INÍCIO DA LÓGICA DA IMAGEM ---
-        String urlDaMidia = ex.getUrlImagem(); // Chama o método que criamos no Exercicio.java
+        // RESET DE SEGURANÇA: Garante que o vídeo pare e a foto volte se o usuário rolar a tela
+        holder.videoExercicio.setVisibility(View.GONE);
+        holder.videoExercicio.stopPlayback();
+
+        // --- INÍCIO DA LÓGICA DA IMAGEM/VÍDEO ---
+        String urlDaMidia = ex.getUrlImagem();
 
         if (urlDaMidia != null && !urlDaMidia.isEmpty()) {
-            holder.imgExercicio.setVisibility(View.VISIBLE); // Garante que a foto aparece
+            holder.imgExercicio.setVisibility(View.VISIBLE);
 
-            // O Glide vai na internet, baixa a foto e salva na memória do celular (cache)
+            // O Glide baixa a miniatura e salva no cache
             Glide.with(holder.itemView.getContext())
                     .load(urlDaMidia)
-                    .placeholder(android.R.color.darker_gray) // Fundo cinza provisório enquanto carrega
-                    .error(android.R.color.holo_red_light)    // Fica vermelho caso o link esteja quebrado
-                    .centerCrop() // Ajusta a imagem para não ficar achatada
-                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL) // <-- SALVA NO CACHE
+                    .placeholder(android.R.color.darker_gray)
+                    .error(android.R.color.holo_red_light)
+                    .centerCrop()
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                     .into(holder.imgExercicio);
 
-            // --- NOVO: ABRIR O VÍDEO AO CLICAR NA IMAGEM ---
+            // --- LÓGICA DE RODAR NO QUADRADINHO ---
             holder.imgExercicio.setOnClickListener(v -> {
-                android.content.Intent intent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
-                intent.setDataAndType(android.net.Uri.parse(urlDaMidia), "video/*");
+                // Se for um vídeo (termina com .mp4), roda no lugar da foto
+                if (urlDaMidia.toLowerCase().contains(".mp4")) {
+                    holder.imgExercicio.setVisibility(View.GONE); // Esconde a foto
+                    holder.videoExercicio.setVisibility(View.VISIBLE); // Mostra o vídeo
 
-                try {
-                    // Tenta abrir no player de vídeo nativo do celular
-                    holder.itemView.getContext().startActivity(intent);
-                } catch (Exception e) {
-                    // Se der erro (ex: celular sem player de vídeo), abre no navegador normal
-                    intent.setData(android.net.Uri.parse(urlDaMidia));
-                    holder.itemView.getContext().startActivity(intent);
+                    holder.videoExercicio.setVideoURI(android.net.Uri.parse(urlDaMidia));
+
+                    // --- NOVO: Adiciona a barra de controles (Play/Pause) ---
+                    MediaController mediaController = new MediaController(holder.itemView.getContext());
+                    mediaController.setAnchorView(holder.videoExercicio);
+                    holder.videoExercicio.setMediaController(mediaController);
+                    // --------------------------------------------------------
+
+                    // Faz o vídeo repetir automaticamente (loop)
+                    holder.videoExercicio.setOnPreparedListener(mp -> mp.setLooping(true));
+
+                    holder.videoExercicio.start(); // Dá o play
                 }
+                // Se for imagem, não fazemos nada no clique, pois ela já está sendo mostrada!
             });
 
         } else {
-            // Se o exercício não tiver foto no banco de dados, esconde o espaço vazio
+            // Se não tem nada, esconde os dois
             holder.imgExercicio.setVisibility(View.GONE);
-
-            // Limpa a foto anterior da memória do Android para evitar o bug de reciclagem
+            holder.videoExercicio.setVisibility(View.GONE);
             Glide.with(holder.itemView.getContext()).clear(holder.imgExercicio);
             holder.imgExercicio.setImageDrawable(null);
-
-            // Remove o clique caso não tenha imagem/vídeo
             holder.imgExercicio.setOnClickListener(null);
         }
-        // --- FIM DA LÓGICA DA IMAGEM ---
+        // --- FIM DA LÓGICA ---
 
-        // Configura o clique no botão de completar
         holder.btnCompleto.setOnClickListener(v -> {
             if (listener != null) listener.onMarcarCompleto(v, ex);
         });
@@ -105,7 +113,8 @@ public class ExercicioAdapter extends RecyclerView.Adapter<ExercicioAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNome, tvRepeticoes, tvDescricao, btnCompleto;
-        ImageView imgExercicio; // Campo de imagem
+        ImageView imgExercicio;
+        VideoView videoExercicio; // Tocador de vídeo
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,9 +122,10 @@ public class ExercicioAdapter extends RecyclerView.Adapter<ExercicioAdapter.View
             tvRepeticoes = itemView.findViewById(R.id.tv_item_repeticoes);
             tvDescricao = itemView.findViewById(R.id.tv_item_descricao);
             btnCompleto = itemView.findViewById(R.id.btn_item_completo);
-
-            // Componente ligado à tela
             imgExercicio = itemView.findViewById(R.id.img_item_exercicio);
+
+            // Ligando com o ID do item_exercicio.xml
+            videoExercicio = itemView.findViewById(R.id.video_item_exercicio);
         }
     }
 }

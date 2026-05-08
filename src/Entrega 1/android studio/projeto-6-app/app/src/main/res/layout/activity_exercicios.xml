@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_nav">
+        android:layout_above="@+id/bottom_nav"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -126,25 +127,9 @@
                         android:textColor="#F07167"
                         android:textSize="12sp" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:paddingBottom="8dp"
-                        android:text="Histórico"
-                        android:textColor="#9E9E9E"
-                        android:textSize="12sp" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:paddingBottom="8dp"
-                        android:text="Instruções"
-                        android:textColor="#9E9E9E"
-                        android:textSize="12sp" />
+
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -181,7 +166,7 @@
             </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/bottom_nav"
