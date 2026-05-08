@@ -58,14 +58,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Recupera os dados que você salvou na ExerciciosActivity
+        // Recupera os dados que você salvou na memória
         SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+
+        // Pega quantos foram concluídos (se não existir, é 0)
         int feitos = prefs.getInt("exerciciosConcluidos", 0);
 
-        // Exemplo: 3 exercícios totais definidos pela clínica
-        int total = 3;
+        // Pega o total de exercícios (Se a ExerciciosActivity ainda não tiver salvo nada, colocamos 4 como padrão)
+        int total = prefs.getInt("totalExercicios", 4);
 
-        // Atualiza a interface com os dados reais salvos
+        // Atualiza a interface (Círculo, porcentagem e contador) com os dados reais salvos
         atualizarInterfaceProgresso(feitos, total);
 
         // Atualiza a saudação caso o nome tenha mudado
