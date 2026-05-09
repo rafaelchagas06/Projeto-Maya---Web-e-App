@@ -5,21 +5,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.rpgclinicapp.models.Prontuario;
 import com.example.rpgclinicapp.network.RetrofitClient;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.ArrayList;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProgressoActivity extends AppCompatActivity {
 
-    private TextView tvStatusAtual, tvNotasMedicas, tvDataNota;
+    private TextView tvNotasMedicas, tvDataNota, tvNomePerfil;
+    private LineChart chartDor;
     private DatabaseHelper dbHelper;
 
     @Override
@@ -29,68 +38,153 @@ public class ProgressoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_progresso);
 
         dbHelper = new DatabaseHelper(this);
-        tvStatusAtual = findViewById(R.id.tv_status_atual);
         tvNotasMedicas = findViewById(R.id.tv_notas_medicas);
         tvDataNota = findViewById(R.id.tv_data_nota);
+        tvNomePerfil = findViewById(R.id.tv_nome_perfil);
+        chartDor = findViewById(R.id.chart_dor);
+
+        SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+        String nomeUser = prefs.getString("nomeDoUsuario", "Paciente");
+        if (tvNomePerfil != null) tvNomePerfil.setText(nomeUser);
 
         setupBottomNavigation();
+        configurarEstiloGrafico();
         buscarDadosEvolucao();
+    }
+
+    private void configurarEstiloGrafico() {
+        if (chartDor == null) return;
+        chartDor.getDescription().setEnabled(false);
+        chartDor.setDrawGridBackground(false);
+        chartDor.setTouchEnabled(true);
+        chartDor.setNoDataText("Carregando dados do gráfico...");
+
+        chartDor.getAxisLeft().setAxisMaximum(10f);
+        chartDor.getAxisLeft().setAxisMinimum(0f);
+        chartDor.getAxisLeft().setGranularity(1f);
+        chartDor.getAxisRight().setEnabled(false);
+
+        XAxis xAxis = chartDor.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setGranularity(1f);
     }
 
     private void buscarDadosEvolucao() {
         SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
         long idPaciente = prefs.getLong("idDoUsuario", 0);
-
         if (idPaciente == 0) return;
 
         RetrofitClient.getApiService().getProntuarios(idPaciente).enqueue(new Callback<List<Prontuario>>() {
             @Override
             public void onResponse(Call<List<Prontuario>> call, Response<List<Prontuario>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    Prontuario ultimoProntuario = response.body().get(0);
-                    atualizarInterface(ultimoProntuario.getObservacao(), ultimoProntuario.getData());
-                    salvarNoSQLite(idPaciente, ultimoProntuario);
-                } else { carregarDoSQLite(); }
+                    List<Prontuario> lista = response.body();
+                    salvarHistoricoNoSQLite(idPaciente, lista);
+                    // Agora carregamos do banco para garantir que as funções de "acumular" e "ordenar" funcionem
+                    carregarNotasDoSQLite();
+                    gerarGrafico();
+                } else {
+                    carregarNotasDoSQLite();
+                    gerarGrafico();
+                }
             }
             @Override
-            public void onFailure(Call<List<Prontuario>> call, Throwable t) { carregarDoSQLite(); }
+            public void onFailure(Call<List<Prontuario>> call, Throwable t) {
+                carregarNotasDoSQLite();
+                gerarGrafico();
+            }
         });
     }
 
-    private void atualizarInterface(String observacao, String data) {
-        if (tvNotasMedicas != null) tvNotasMedicas.setText(observacao);
-        if (tvDataNota != null) tvDataNota.setText("Atualizado em: " + data);
-    }
+    private void gerarGrafico() {
+        if (chartDor == null) return;
 
-    private void salvarNoSQLite(long idPaciente, Prontuario p) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        db.delete("prontuario_local", null, null);
-        values.put("paciente_id", idPaciente);
-        values.put("dor", p.getDor());
-        values.put("data", p.getData());
-        values.put("observacao", p.getObservacao());
-        db.insert("prontuario_local", null, values);
-        db.close();
-    }
-
-    private void carregarDoSQLite() {
+        List<Entry> entradas = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM prontuario_local LIMIT 1", null);
+
+        // IMPORTANTE: ORDER BY data ASC faz o gráfico seguir a linha do tempo (da esquerda para a direita)
+        Cursor cursor = db.rawQuery("SELECT dor FROM prontuario_local ORDER BY data ASC", null);
+
+        int count = 0;
         if (cursor.moveToFirst()) {
-            atualizarInterface(cursor.getString(cursor.getColumnIndexOrThrow("observacao")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("data")));
+            do {
+                float nivelDor = cursor.getFloat(0);
+                entradas.add(new Entry(count, nivelDor));
+                count++;
+            } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
+
+        if (entradas.isEmpty()) return;
+
+        LineDataSet dataSet = new LineDataSet(entradas, "Evolução da Dor");
+        dataSet.setColor(Color.parseColor("#F07167"));
+        dataSet.setCircleColor(Color.parseColor("#F07167"));
+        dataSet.setLineWidth(3f);
+        dataSet.setCircleRadius(5f);
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(Color.parseColor("#F07167"));
+        dataSet.setFillAlpha(50);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+
+        LineData lineData = new LineData(dataSet);
+        chartDor.setData(lineData);
+        chartDor.animateX(800);
+        chartDor.invalidate();
+    }
+
+    private void carregarNotasDoSQLite() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        // ORDER BY data DESC para mostrar a nota mais recente no topo do histórico
+        Cursor cursor = db.rawQuery("SELECT observacao, data FROM prontuario_local ORDER BY data DESC", null);
+
+        StringBuilder acumulado = new StringBuilder();
+        String dataMaisRecente = "---";
+
+        if (cursor.moveToFirst()) {
+            dataMaisRecente = cursor.getString(1); // Pega a data do primeiro (mais recente)
+            do {
+                String obs = cursor.getString(0);
+                String data = cursor.getString(1);
+
+                // Formata cada nota no histórico acumulado
+                acumulado.append("📅 ").append(data).append("\n")
+                        .append(obs).append("\n")
+                        .append("----------------------------\n\n");
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        if (tvNotasMedicas != null) tvNotasMedicas.setText(acumulado.toString());
+        if (tvDataNota != null) tvDataNota.setText("Atualizado em: " + dataMaisRecente);
+    }
+
+    private void salvarHistoricoNoSQLite(long idPaciente, List<Prontuario> lista) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete("prontuario_local", null, null);
+
+        for (Prontuario p : lista) {
+            ContentValues values = new ContentValues();
+            values.put("paciente_id", idPaciente);
+            values.put("dor", p.getDor());
+            values.put("data", p.getData());
+            values.put("observacao", p.getObservacao());
+            db.insert("prontuario_local", null, values);
+        }
         db.close();
     }
 
     private void setupBottomNavigation() {
-        findViewById(R.id.nav_inicio).setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+        findViewById(R.id.nav_inicio).setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        });
         findViewById(R.id.nav_agenda).setOnClickListener(v -> startActivity(new Intent(this, AgendaActivity.class)));
         findViewById(R.id.nav_exercicios).setOnClickListener(v -> startActivity(new Intent(this, ExerciciosActivity.class)));
-
-        // --- ADICIONADO: NAVEGAÇÃO PARA PERFIL ---
         findViewById(R.id.nav_perfil).setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
     }
 }

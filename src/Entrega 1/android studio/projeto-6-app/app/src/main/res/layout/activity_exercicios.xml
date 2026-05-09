@@ -35,7 +35,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Minha Rotina Diária"
+                        android:text="Minha Rotina"
                         android:textColor="#1A1A1A"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -62,98 +62,60 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Exercícios prescritos de hoje:"
-                    android:textColor="#1A1A1A"
-                    android:textSize="14sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_search_bar"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp">
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@android:drawable/ic_menu_search"
-                            app:tint="#757575" />
-                        <EditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@null"
-                            android:hint="Procurar"
-                            android:textColor="#1A1A1A"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_search_bar"
-                        android:padding="8dp"
-                        android:src="@android:drawable/ic_menu_manage"
-                        app:tint="#757575" />
-                </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:weightSum="2">
 
                     <TextView
+                        android:id="@+id/tv_aba_ativos"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:paddingBottom="8dp"
-                        android:text="Exercícios Ativos"
+                        android:paddingBottom="12dp"
+                        android:text="Ativos"
                         android:textColor="#F07167"
-                        android:textSize="12sp" />
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-
-
-
+                    <TextView
+                        android:id="@+id/tv_aba_historico"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:paddingBottom="12dp"
+                        android:text="Histórico"
+                        android:textColor="#757575"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:weightSum="2">
                     <View
+                        android:id="@+id/linha_ativos"
                         android:layout_width="0dp"
                         android:layout_height="2dp"
                         android:layout_weight="1"
                         android:background="#F07167" />
                     <View
+                        android:id="@+id/linha_historico"
                         android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="2"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
                         android:background="#E0E0E0" />
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:padding="12dp">
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -161,9 +123,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
-                    android:clipToPadding="false" />
+                    android:visibility="visible" />
 
-            </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/ll_historico"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone" />
+
+            </FrameLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -195,7 +164,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Início"
                 android:textColor="#757575"
                 android:textSize="10sp" />
@@ -207,9 +175,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:clickable="true"
-            android:focusable="true">
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -218,7 +184,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Agenda"
                 android:textColor="#757575"
                 android:textSize="10sp" />
@@ -230,9 +195,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:clickable="true"
-            android:focusable="true">
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -241,7 +204,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Exercícios"
                 android:textColor="#F07167"
                 android:textSize="10sp" />
@@ -253,9 +215,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:clickable="true"
-            android:focusable="true">
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -264,7 +224,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Progresso"
                 android:textColor="#757575"
                 android:textSize="10sp" />
@@ -276,9 +235,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:clickable="true"
-            android:focusable="true">
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -287,7 +244,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:text="Perfil"
                 android:textColor="#757575"
                 android:textSize="10sp" />

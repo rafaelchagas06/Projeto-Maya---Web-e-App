@@ -4,9 +4,12 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +20,10 @@ import com.example.rpgclinicapp.models.CheckinRequest;
 import com.example.rpgclinicapp.models.Exercicio;
 import com.example.rpgclinicapp.network.RetrofitClient;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -27,95 +33,73 @@ import retrofit2.Response;
 public class ExerciciosActivity extends AppCompatActivity {
 
     private RecyclerView rvExercicios;
+    private LinearLayout llHistorico;
     private ExercicioAdapter adapter;
     private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
-
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
         setContentView(R.layout.activity_exercicios);
 
         dbHelper = new DatabaseHelper(this);
-
         rvExercicios = findViewById(R.id.rv_exercicios);
-        if (rvExercicios != null) {
-            rvExercicios.setLayoutManager(new LinearLayoutManager(this));
-        }
+        llHistorico = findViewById(R.id.ll_historico);
 
+        if (rvExercicios != null) rvExercicios.setLayoutManager(new LinearLayoutManager(this));
+
+        configurarAbas();
         buscarExercicios();
         configurarNavegacao();
+        carregarHistorico();
+    }
+
+    private void configurarAbas() {
+        TextView tvAtivos = findViewById(R.id.tv_aba_ativos);
+        TextView tvHistorico = findViewById(R.id.tv_aba_historico);
+        View linhaAtivos = findViewById(R.id.linha_ativos);
+        View linhaHistorico = findViewById(R.id.linha_historico);
+
+        tvAtivos.setOnClickListener(v -> {
+            rvExercicios.setVisibility(View.VISIBLE);
+            llHistorico.setVisibility(View.GONE);
+            tvAtivos.setTextColor(Color.parseColor("#F07167"));
+            tvAtivos.setTypeface(null, Typeface.BOLD);
+            linhaAtivos.setBackgroundColor(Color.parseColor("#F07167"));
+            tvHistorico.setTextColor(Color.GRAY);
+            tvHistorico.setTypeface(null, Typeface.NORMAL);
+            linhaHistorico.setBackgroundColor(Color.parseColor("#E0E0E0"));
+        });
+
+        tvHistorico.setOnClickListener(v -> {
+            rvExercicios.setVisibility(View.GONE);
+            llHistorico.setVisibility(View.VISIBLE);
+            tvHistorico.setTextColor(Color.parseColor("#F07167"));
+            tvHistorico.setTypeface(null, Typeface.BOLD);
+            linhaHistorico.setBackgroundColor(Color.parseColor("#F07167"));
+            tvAtivos.setTextColor(Color.GRAY);
+            tvAtivos.setTypeface(null, Typeface.NORMAL);
+            linhaAtivos.setBackgroundColor(Color.parseColor("#E0E0E0"));
+            carregarHistorico();
+        });
     }
 
     private void buscarExercicios() {
-        // 1. Resgata o ID do usuário salvo no login
         SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
         long meuId = prefs.getLong("idDoUsuario", -1);
-
         if (meuId != -1) {
-            // 2. Passa o ID na chamada da API
             RetrofitClient.getApiService().getExercicios(meuId).enqueue(new Callback<List<Exercicio>>() {
                 @Override
                 public void onResponse(Call<List<Exercicio>> call, Response<List<Exercicio>> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         List<Exercicio> lista = response.body();
-
-                        // --- ADICIONADO: Salva o tamanho da lista (total) na memória do celular ---
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt("totalExercicios", lista.size());
-                        editor.apply();
-                        // --------------------------------------------------------------------------
-
-                        // Atualiza o adapter com a lista retornada pelo banco
-                        adapter = new ExercicioAdapter(lista, (view, exercicio) -> {
-                            onMarcarCompleto(view, exercicio);
-                        });
+                        prefs.edit().putInt("totalExercicios", lista.size()).apply();
+                        adapter = new ExercicioAdapter(lista, (view, exercicio) -> onMarcarCompleto(view, exercicio));
                         rvExercicios.setAdapter(adapter);
-
-                    } else {
-                        Toast.makeText(ExerciciosActivity.this, "Nenhum exercício encontrado.", Toast.LENGTH_SHORT).show();
                     }
                 }
-
-                @Override
-                public void onFailure(Call<List<Exercicio>> call, Throwable t) {
-                    Toast.makeText(ExerciciosActivity.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Toast.makeText(this, "Erro: Usuário não identificado.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void configurarNavegacao() {
-        LinearLayout navInicio = findViewById(R.id.nav_inicio);
-        if (navInicio != null) {
-            navInicio.setOnClickListener(v -> {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-            });
-        }
-
-        LinearLayout navAgenda = findViewById(R.id.nav_agenda);
-        if (navAgenda != null) {
-            navAgenda.setOnClickListener(v -> startActivity(new Intent(this, AgendaActivity.class)));
-        }
-
-        LinearLayout navProgresso = findViewById(R.id.nav_progresso);
-        if (navProgresso != null) {
-            navProgresso.setOnClickListener(v -> startActivity(new Intent(this, ProgressoActivity.class)));
-        }
-
-        LinearLayout navPerfil = findViewById(R.id.nav_perfil);
-        if (navPerfil != null) {
-            navPerfil.setOnClickListener(v -> {
-                Intent intent = new Intent(this, PerfilActivity.class);
-                startActivity(intent);
+                @Override public void onFailure(Call<List<Exercicio>> call, Throwable t) {}
             });
         }
     }
@@ -126,76 +110,83 @@ public class ExerciciosActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 
         android.widget.SeekBar sbDor = dialog.findViewById(R.id.sb_dor);
-        android.widget.TextView tvValorDor = dialog.findViewById(R.id.tv_valor_dor);
+        TextView tvValorDor = dialog.findViewById(R.id.tv_valor_dor);
         android.widget.Button btnSalvar = dialog.findViewById(R.id.btn_salvar_registro);
 
         sbDor.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(android.widget.SeekBar seekBar, int progress, boolean fromUser) {
-                tvValorDor.setText(String.valueOf(progress));
-            }
-            @Override public void onStartTrackingTouch(android.widget.SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(android.widget.SeekBar seekBar) {}
+            @Override public void onProgressChanged(android.widget.SeekBar sb, int p, boolean f) { tvValorDor.setText(String.valueOf(p)); }
+            @Override public void onStartTrackingTouch(android.widget.SeekBar sb) {}
+            @Override public void onStopTrackingTouch(android.widget.SeekBar sb) {}
         });
 
         btnSalvar.setOnClickListener(v -> {
-            int nivelDor = sbDor.getProgress();
-            // Puxa o nome real do exercício vindo do banco (titulo)
-            String nomeEx = (exercicio != null && exercicio.getNome() != null) ? exercicio.getNome() : "Exercício";
-
+            String nomeEx = (exercicio != null) ? exercicio.getNome() : "Exercício";
             SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
-            String nomeUsuarioLogado = prefs.getString("nomeDoUsuario", "Paciente");
-            long idUsuarioLogado = prefs.getLong("idDoUsuario", 0);
+            long idUser = prefs.getLong("idDoUsuario", 0);
+            String nomeUser = prefs.getString("nomeDoUsuario", "Paciente");
 
-            CheckinRequest checkin = new CheckinRequest(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
-
-            RetrofitClient.getApiService().salvarCheckin(checkin).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(ExerciciosActivity.this, "✅ Registro enviado com sucesso!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        salvarCheckinNoSQLite(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
-                    }
+            RetrofitClient.getApiService().salvarCheckin(new CheckinRequest(idUser, nomeUser, nomeEx, sbDor.getProgress())).enqueue(new Callback<ResponseBody>() {
+                @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
+                    if (!r.isSuccessful()) salvarCheckinNoSQLite(idUser, nomeUser, nomeEx, sbDor.getProgress());
                 }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    salvarCheckinNoSQLite(idUsuarioLogado, nomeUsuarioLogado, nomeEx, nivelDor);
-                    Toast.makeText(ExerciciosActivity.this, "⚠️ Offline: Salvo localmente no celular", Toast.LENGTH_SHORT).show();
-                }
+                @Override public void onFailure(Call<ResponseBody> c, Throwable t) { salvarCheckinNoSQLite(idUser, nomeUser, nomeEx, sbDor.getProgress()); }
             });
 
-            int concluidosAtual = prefs.getInt("exerciciosConcluidos", 0);
-            prefs.edit().putInt("exerciciosConcluidos", concluidosAtual + 1).apply();
-
+            prefs.edit().putInt("exerciciosConcluidos", prefs.getInt("exerciciosConcluidos", 0) + 1).apply();
+            salvarNoHistoricoLocal(nomeEx, sbDor.getProgress());
             dialog.dismiss();
 
-            if (view instanceof android.widget.TextView) {
-                android.widget.TextView tv = (android.widget.TextView) view;
+            if (view instanceof TextView) {
+                TextView tv = (TextView) view;
                 tv.setText("Completo ✓");
                 tv.setBackgroundResource(R.drawable.bg_button_teal);
-                tv.setTextColor(android.graphics.Color.WHITE);
+                tv.setTextColor(Color.WHITE);
                 tv.setEnabled(false);
             }
         });
-
         dialog.show();
     }
 
-    private void salvarCheckinNoSQLite(long idPaciente, String nomePaciente, String exercicio, int dor) {
-        try {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put("paciente_id", idPaciente);
-            values.put("paciente_nome", nomePaciente);
-            values.put("exercicio_nome", exercicio);
-            values.put("dor", dor);
+    private void salvarNoHistoricoLocal(String nomeEx, int dor) {
+        SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+        String data = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+        String novo = "✓ " + nomeEx + " (Dor: " + dor + ") - " + data;
+        String antigo = prefs.getString("historicoExercicios", "");
+        prefs.edit().putString("historicoExercicios", antigo.isEmpty() ? novo : novo + "||" + antigo).apply();
+        carregarHistorico();
+    }
 
-            db.insert("checkins_pendentes", null, values);
-            db.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void carregarHistorico() {
+        if (llHistorico == null) return;
+        llHistorico.removeAllViews();
+        String historico = getSharedPreferences("MeusDados", MODE_PRIVATE).getString("historicoExercicios", "");
+        if (historico.isEmpty()) return;
+
+        for (String registro : historico.split("\\|\\|")) {
+            TextView tv = new TextView(this);
+            tv.setText(registro);
+            tv.setPadding(20, 30, 20, 30);
+            tv.setTextColor(Color.parseColor("#333333"));
+            View linha = new View(this);
+            linha.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
+            linha.setBackgroundColor(Color.LTGRAY);
+            llHistorico.addView(tv);
+            llHistorico.addView(linha);
         }
+    }
+
+    private void salvarCheckinNoSQLite(long id, String nome, String ex, int dor) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("paciente_id", id); v.put("paciente_nome", nome); v.put("exercicio_nome", ex); v.put("dor", dor);
+        db.insert("checkins_pendentes", null, v);
+        db.close();
+    }
+
+    private void configurarNavegacao() {
+        findViewById(R.id.nav_inicio).setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+        findViewById(R.id.nav_agenda).setOnClickListener(v -> startActivity(new Intent(this, AgendaActivity.class)));
+        findViewById(R.id.nav_progresso).setOnClickListener(v -> startActivity(new Intent(this, ProgressoActivity.class)));
+        findViewById(R.id.nav_perfil).setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
     }
 }

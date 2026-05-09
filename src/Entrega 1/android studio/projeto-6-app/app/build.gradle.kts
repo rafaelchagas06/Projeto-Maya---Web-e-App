@@ -55,6 +55,8 @@ dependencies {
 
     implementation("com.onesignal:OneSignal:[5.0.0, 5.99.99]")
 
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
