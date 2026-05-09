@@ -7,6 +7,7 @@ import com.example.rpgclinicapp.models.CheckinRequest;
 import com.example.rpgclinicapp.models.Exercicio;
 import com.example.rpgclinicapp.models.LoginRequest;
 import com.example.rpgclinicapp.models.LoginResponse;
+import com.example.rpgclinicapp.models.Notificacao;
 import com.example.rpgclinicapp.models.Prontuario;
 
 import java.util.List;
@@ -14,8 +15,10 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ClinicApiService {
 
@@ -37,4 +40,12 @@ public interface ClinicApiService {
 
     @GET("api/prontuarios/{id}")
     Call<List<Prontuario>> getProntuarios(@Path("id") long pacienteId);
+
+    // Busca as notificações filtrando pelo ID do paciente
+    @GET("notificacoes?select=*")
+    Call<List<Notificacao>> getNotificacoes(@Query("paciente_id") String pacienteIdEq);
+
+    // Rota para marcar a notificação como lida (opcional, mas recomendado para o futuro)
+    @PATCH("notificacoes")
+    Call<Void> marcarComoLida(@Query("id") String idEq, @Body Notificacao notificacaoLida);
 }

@@ -42,15 +42,14 @@ public class MainActivity extends AppCompatActivity {
         // --- Lógica da Saudação e Data Dinâmica  ---
         configurarSaudacaoEData();
 
-        // --- Lógica de Notificações ---
-        criarCanalNotificacao();
-        solicitarPermissaoEAgendarLembrete();
-
         // --- Lógica de Escala de Dor ---
         configurarEscalaDor();
 
         // --- Configuração da Barra Inferior ---
         configurarNavegacao();
+
+        // --- Solicitar Permissão de Notificação (Para o OneSignal) ---
+        solicitarPermissaoNotificacao();
     }
 
     // O onResume roda toda vez que você volta para esta tela
@@ -60,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Recupera os dados que você salvou na memória
         SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+
+        // --- ADICIONADO: Avisa o OneSignal quem é o paciente logado ---
+        long meuId = prefs.getLong("idDoUsuario", -1);
+        if (meuId != -1) {
+            com.onesignal.OneSignal.login(String.valueOf(meuId));
+        }
+        // --------------------------------------------------------------
 
         // Pega quantos foram concluídos (se não existir, é 0)
         int feitos = prefs.getInt("exerciciosConcluidos", 0);
@@ -181,47 +187,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void criarCanalNotificacao() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            CharSequence name = "Lembrete RPG";
-            String description = "Canal para lembretes de exercícios";
-            int importance = android.app.NotificationManager.IMPORTANCE_HIGH;
-            android.app.NotificationChannel channel = new android.app.NotificationChannel("RPG_ALARM_CHANNEL", name, importance);
-            channel.setDescription(description);
-            android.app.NotificationManager notificationManager = getSystemService(android.app.NotificationManager.class);
-            if (notificationManager != null) notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void solicitarPermissaoEAgendarLembrete() {
+    // Mantemos apenas a permissão para o OneSignal funcionar nas versões mais recentes do Android
+    private void solicitarPermissaoNotificacao() {
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
-        }
-        agendarLembreteDiario();
-    }
-
-    private void agendarLembreteDiario() {
-        android.app.AlarmManager alarmManager = (android.app.AlarmManager) getSystemService(android.content.Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, LembreteReceiver.class);
-        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(this, 0, intent, android.app.PendingIntent.FLAG_IMMUTABLE);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
-        calendar.set(Calendar.MINUTE, 0);
-
-        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-        }
-
-        try {
-            if (alarmManager != null) {
-                alarmManager.setRepeating(android.app.AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), android.app.AlarmManager.INTERVAL_DAY, pendingIntent);
-            }
-        } catch (SecurityException e) {
-            e.printStackTrace();
         }
     }
 }
