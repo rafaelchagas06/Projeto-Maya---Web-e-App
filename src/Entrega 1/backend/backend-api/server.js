@@ -51,23 +51,26 @@ app.get('/api/exercicios/:paciente_id', async (req, res) => {
 
 // ROTA DE CHECK-IN
 app.post('/api/exercicios/checkin', async (req, res) => {
-    const { paciente_id, paciente_nome, exercicio_nome, dor } = req.body;
+    // 1. ADICIONADO 'comentario' AQUI:
+ const { paciente_id, paciente_nome, exercicio_nome, dor, comentario } = req.body;
 
-    try {
-        const query = `
-            INSERT INTO checkins (paciente_id, paciente_nome, exercicio_nome, dor)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *;
-        `;
-        const values = [paciente_id, paciente_nome, exercicio_nome, dor];
-        const result = await pool.query(query, values);
+ try {
+        // 2. ADICIONADO 'comentario' e '$5' NA QUERY SQL:
+ const query = `
+ INSERT INTO checkins (paciente_id, paciente_nome, exercicio_nome, dor, comentario)
+ VALUES ($1, $2, $3, $4, $5)
+ RETURNING *;
+ `;
+        // 3. ADICIONADO 'comentario' NO ARRAY DE VALORES:
+ const values = [paciente_id, paciente_nome, exercicio_nome, dor, comentario];
+ const result = await pool.query(query, values);
 
-        console.log(`[CHECKIN] Registro salvo para: ${paciente_nome}`);
-        res.status(201).json({ message: "Check-in salvo com sucesso!", data: result.rows[0] });
-    } catch (err) {
-        console.error('[ERRO BANCO]', err);
-        res.status(500).json({ error: "Erro ao salvar no banco de dados" });
-    }
+console.log(`[CHECKIN] Registro salvo para: ${paciente_nome} com comentário`);
+ res.status(201).json({ message: "Check-in salvo com sucesso!", data: result.rows[0] });
+ } catch (err) {
+  console.error('[ERRO BANCO]', err);
+  res.status(500).json({ error: "Erro ao salvar no banco de dados" });
+  }
 });
 
 // Rotas de Autenticação e Agenda
