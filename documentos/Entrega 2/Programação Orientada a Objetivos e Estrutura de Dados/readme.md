@@ -1,4 +1,4 @@
-# 📘 Diagrama de Classes — RPG Clinic App
+# 📘 Diagrama de Classes — AlinhaTech App
 
 ## 🩺 Descrição
 Este diagrama de classes representa a estrutura do aplicativo **RPG Clinic**, desenvolvido em Android Studio utilizando Java.  
