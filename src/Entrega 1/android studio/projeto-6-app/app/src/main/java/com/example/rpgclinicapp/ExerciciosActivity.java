@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -111,6 +112,7 @@ public class ExerciciosActivity extends AppCompatActivity {
 
         android.widget.SeekBar sbDor = dialog.findViewById(R.id.sb_dor);
         TextView tvValorDor = dialog.findViewById(R.id.tv_valor_dor);
+        EditText etComentario = dialog.findViewById(R.id.et_comentario_exercicio);
         android.widget.Button btnSalvar = dialog.findViewById(R.id.btn_salvar_registro);
 
         sbDor.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
@@ -121,19 +123,36 @@ public class ExerciciosActivity extends AppCompatActivity {
 
         btnSalvar.setOnClickListener(v -> {
             String nomeEx = (exercicio != null) ? exercicio.getNome() : "Exercício";
+            String comentario = etComentario.getText().toString().trim();
             SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
             long idUser = prefs.getLong("idDoUsuario", 0);
             String nomeUser = prefs.getString("nomeDoUsuario", "Paciente");
 
-            RetrofitClient.getApiService().salvarCheckin(new CheckinRequest(idUser, nomeUser, nomeEx, sbDor.getProgress())).enqueue(new Callback<ResponseBody>() {
+            // 1. Mensagem avisando que o app começou a enviar os dados
+            Toast.makeText(ExerciciosActivity.this, "Enviando registro...", Toast.LENGTH_SHORT).show();
+
+            // 2. Chamada para a API
+            RetrofitClient.getApiService().salvarCheckin(new CheckinRequest(idUser, nomeUser, nomeEx, sbDor.getProgress(), comentario)).enqueue(new Callback<ResponseBody>() {
                 @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r) {
-                    if (!r.isSuccessful()) salvarCheckinNoSQLite(idUser, nomeUser, nomeEx, sbDor.getProgress());
+                    if (r.isSuccessful()) {
+                        // DEU CERTO NA API!
+                        Toast.makeText(ExerciciosActivity.this, "Registrado com sucesso!", Toast.LENGTH_LONG).show();
+                    } else {
+                        // A API RESPONDEU COM ERRO
+                        salvarCheckinNoSQLite(idUser, nomeUser, nomeEx, sbDor.getProgress(), comentario);
+                        Toast.makeText(ExerciciosActivity.this, "Salvo offline (Erro no banco)", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                @Override public void onFailure(Call<ResponseBody> c, Throwable t) { salvarCheckinNoSQLite(idUser, nomeUser, nomeEx, sbDor.getProgress()); }
+                @Override public void onFailure(Call<ResponseBody> c, Throwable t) {
+                    // ERRO DE INTERNET OU CONEXÃO
+                    salvarCheckinNoSQLite(idUser, nomeUser, nomeEx, sbDor.getProgress(), comentario);
+                    Toast.makeText(ExerciciosActivity.this, "Salvo offline (Sem internet)", Toast.LENGTH_SHORT).show();
+                }
             });
 
+            // 3. Atualização da Interface
             prefs.edit().putInt("exerciciosConcluidos", prefs.getInt("exerciciosConcluidos", 0) + 1).apply();
-            salvarNoHistoricoLocal(nomeEx, sbDor.getProgress());
+            salvarNoHistoricoLocal(nomeEx, sbDor.getProgress(), comentario);
             dialog.dismiss();
 
             if (view instanceof TextView) {
@@ -147,10 +166,13 @@ public class ExerciciosActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void salvarNoHistoricoLocal(String nomeEx, int dor) {
+    private void salvarNoHistoricoLocal(String nomeEx, int dor, String comentario) {
         SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
         String data = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
-        String novo = "✓ " + nomeEx + " (Dor: " + dor + ") - " + data;
+
+        String textoComentario = comentario.isEmpty() ? "" : "\nNota: " + comentario;
+        String novo = "✓ " + nomeEx + " (Dor: " + dor + ")" + textoComentario + " - " + data;
+
         String antigo = prefs.getString("historicoExercicios", "");
         prefs.edit().putString("historicoExercicios", antigo.isEmpty() ? novo : novo + "||" + antigo).apply();
         carregarHistorico();
@@ -167,6 +189,8 @@ public class ExerciciosActivity extends AppCompatActivity {
             tv.setText(registro);
             tv.setPadding(20, 30, 20, 30);
             tv.setTextColor(Color.parseColor("#333333"));
+            tv.setTextSize(14);
+
             View linha = new View(this);
             linha.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
             linha.setBackgroundColor(Color.LTGRAY);
@@ -175,10 +199,14 @@ public class ExerciciosActivity extends AppCompatActivity {
         }
     }
 
-    private void salvarCheckinNoSQLite(long id, String nome, String ex, int dor) {
+    private void salvarCheckinNoSQLite(long id, String nome, String ex, int dor, String comentario) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues v = new ContentValues();
-        v.put("paciente_id", id); v.put("paciente_nome", nome); v.put("exercicio_nome", ex); v.put("dor", dor);
+        v.put("paciente_id", id);
+        v.put("paciente_nome", nome);
+        v.put("exercicio_nome", ex);
+        v.put("dor", dor);
+        v.put("comentario", comentario);
         db.insert("checkins_pendentes", null, v);
         db.close();
     }

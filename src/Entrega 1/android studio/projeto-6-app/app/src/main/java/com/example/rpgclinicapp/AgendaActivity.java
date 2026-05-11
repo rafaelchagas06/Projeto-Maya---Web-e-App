@@ -1,6 +1,7 @@
 package com.example.rpgclinicapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -35,10 +36,10 @@ public class AgendaActivity extends AppCompatActivity {
     private TextView tvUltimoSelecionado = null;
     private Button btnAgendar;
 
-    // Lista para simular horários que já estão ocupados (futuro SQLite)
+    // Lista para simular horários que já estão ocupados
     private List<String> horariosOcupados = new ArrayList<>();
 
-    // Array com todos os IDs dos horários do seu XML para facilitar o bloqueio
+    // IDs dos horários do seu XML
     private final int[] idsHorarios = {
             R.id.hora_0800, R.id.hora_0900, R.id.hora_1000,
             R.id.hora_1100, R.id.hora_1300, R.id.hora_1400,
@@ -49,61 +50,71 @@ public class AgendaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Oculta a Action Bar superior
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         setContentView(R.layout.activity_agenda);
 
-
         tvTextoConfirmacao = findViewById(R.id.tv_texto_confirmacao);
         btnAgendar = findViewById(R.id.btn_agendar);
         CalendarView calendarView = findViewById(R.id.calendarView);
 
-        // Pinta de cinza os horários que já estão na lista de ocupados
-        atualizarVisualHorarios();
+        // Configuração Inicial da Data (Padrão Banco: yyyy-MM-dd)
+        SimpleDateFormat sdfBanco = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        selectedDate = sdfBanco.format(new Date(calendarView.getDate()));
 
-        // Configuração do Calendário
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        selectedDate = sdf.format(new Date(calendarView.getDate()));
+        // 1. Carrega os horários ocupados do dia de hoje assim que abre a tela
+        carregarHorariosOcupados(selectedDate);
 
         calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            // Salva no formato do banco
             selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+
+            // 2. Sempre que mudar de dia, carrega os horários daquele dia específico
+            carregarHorariosOcupados(selectedDate);
+
+            // Limpa a seleção visual quando troca de dia
+            selectedTime = "";
+            if (tvUltimoSelecionado != null) {
+                tvUltimoSelecionado.setBackgroundResource(R.drawable.bg_time_unselected);
+                tvUltimoSelecionado = null;
+            }
+            tvTextoConfirmacao.setText("Selecione um horário");
         });
 
-        // Configura Barra Inferior e Botão Voltar
         configurarNavegacao();
-
-        // Clique do botão principal do Retrofit
         btnAgendar.setOnClickListener(v -> realizarAgendamento());
     }
 
-    // --- MÉTODOS DE CONTROLE DOS HORÁRIOS ---
-
-    // Este método é chamado direto do XML (android:onClick="selecionarHora")
     public void selecionarHora(View view) {
         TextView tvClicada = (TextView) view;
         String horaEscolhida = tvClicada.getText().toString();
 
-        // 1. Verifica se está bloqueado
         if (horariosOcupados.contains(horaEscolhida)) {
-            Toast.makeText(this, "Horário indisponível!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Horário indisponível neste dia!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 2. Tira a cor "Selecionada" do botão anterior que o usuário tinha clicado
         if (tvUltimoSelecionado != null) {
             tvUltimoSelecionado.setBackgroundResource(R.drawable.bg_time_unselected);
         }
 
-        // 3. Coloca a cor no botão novo
         tvClicada.setBackgroundResource(R.drawable.bg_time_selected);
         tvUltimoSelecionado = tvClicada;
         selectedTime = horaEscolhida;
 
-        // 4. Atualiza o texto de confirmação lá embaixo
+        // --- CONVERSÃO DE DATA PARA BR NO TEXTO ---
         if (tvTextoConfirmacao != null) {
-            tvTextoConfirmacao.setText("Dia selecionado às " + selectedTime + "h");
+            try {
+                SimpleDateFormat formatoBanco = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                SimpleDateFormat formatoBR = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                Date dataObj = formatoBanco.parse(selectedDate);
+                String dataFormatadaBR = formatoBR.format(dataObj);
+
+                tvTextoConfirmacao.setText("Dia " + dataFormatadaBR + " às " + selectedTime + "h");
+            } catch (Exception e) {
+                tvTextoConfirmacao.setText("Dia " + selectedDate + " às " + selectedTime + "h");
+            }
         }
     }
 
@@ -112,14 +123,11 @@ public class AgendaActivity extends AppCompatActivity {
             TextView tv = findViewById(id);
             if (tv != null) {
                 String horaBotao = tv.getText().toString();
-
                 if (horariosOcupados.contains(horaBotao)) {
-                    // BLOQUEADO: Tira o clique e deixa transparente
                     tv.setEnabled(false);
                     tv.setAlpha(0.4f);
                     tv.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.LTGRAY));
                 } else {
-                    // LIVRE: Garante que está normal
                     tv.setEnabled(true);
                     tv.setAlpha(1.0f);
                     tv.setBackgroundTintList(null);
@@ -128,7 +136,6 @@ public class AgendaActivity extends AppCompatActivity {
         }
     }
 
-    // --- LÓGICA DE AGENDAMENTO (RETROFIT) ---
     private void realizarAgendamento() {
         if (selectedTime.isEmpty()) {
             Toast.makeText(this, "Por favor, selecione um horário primeiro.", Toast.LENGTH_SHORT).show();
@@ -148,18 +155,15 @@ public class AgendaActivity extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     AgendaResponse agendaResp = response.body();
-
                     if (agendaResp.isSucesso()) {
                         Toast.makeText(AgendaActivity.this, "Agendado com sucesso!", Toast.LENGTH_LONG).show();
 
-                        // 🔴 MAGIA ACONTECENDO AQUI:
-                        // Adiciona na lista de proibidos e apaga visualmente o botão na hora!
-                        horariosOcupados.add(selectedTime);
+                        // 3. Salva definitivamente o horário para este dia no celular
+                        salvarHorarioOcupado(selectedDate, selectedTime);
+
                         selectedTime = "";
                         tvUltimoSelecionado = null;
-                        atualizarVisualHorarios();
                         tvTextoConfirmacao.setText("Selecione um novo horário");
-
                     } else {
                         Toast.makeText(AgendaActivity.this, "Erro: " + agendaResp.getErro(), Toast.LENGTH_SHORT).show();
                     }
@@ -177,7 +181,39 @@ public class AgendaActivity extends AppCompatActivity {
         });
     }
 
-    // --- NAVEGAÇÃO INFERIOR ---
+    // --- MÉTODOS NOVOS PARA SALVAR OS HORÁRIOS LOCALMENTE ---
+
+    private void salvarHorarioOcupado(String data, String hora) {
+        SharedPreferences prefs = getSharedPreferences("AgendaLocal", MODE_PRIVATE);
+        // Pega os horários que já estavam ocupados neste dia
+        String ocupados = prefs.getString("ocupados_" + data, "");
+
+        // Adiciona o novo horário (separado por vírgula)
+        if (!ocupados.contains(hora)) {
+            prefs.edit().putString("ocupados_" + data, ocupados + hora + ",").apply();
+        }
+        // Recarrega a tela para ficar cinza
+        carregarHorariosOcupados(data);
+    }
+
+    private void carregarHorariosOcupados(String data) {
+        horariosOcupados.clear();
+        SharedPreferences prefs = getSharedPreferences("AgendaLocal", MODE_PRIVATE);
+        String ocupados = prefs.getString("ocupados_" + data, "");
+
+        if (!ocupados.isEmpty()) {
+            // Separa pela vírgula e adiciona na lista
+            String[] arrayOcupados = ocupados.split(",");
+            for (String h : arrayOcupados) {
+                if (!h.isEmpty()) horariosOcupados.add(h);
+            }
+        }
+        // Chama a função que pinta de cinza
+        atualizarVisualHorarios();
+    }
+
+    // --------------------------------------------------------
+
     private void configurarNavegacao() {
         View btnBack = findViewById(R.id.btn_back);
         if (btnBack != null) btnBack.setOnClickListener(v -> finish());

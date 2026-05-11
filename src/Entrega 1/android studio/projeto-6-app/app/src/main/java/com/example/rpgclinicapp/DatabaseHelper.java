@@ -8,7 +8,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Nome do arquivo que ficará escondido no celular
     private static final String DATABASE_NAME = "RPGClinicLocal.db";
-    private static final int DATABASE_VERSION = 1;
+
+    // Aumentamos a versão para 2 para o Android entender que o banco mudou
+    private static final int DATABASE_VERSION = 2;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -22,7 +24,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "paciente_id INTEGER," +
                 "dor INTEGER," +
                 "data TEXT," +
-                "observacao TEXT)");
+                "observacao TEXT," +
+                "comentario TEXT)"); // Novo campo adicionado
 
         // Tabela para salvar Check-ins que falharam por falta de internet
         db.execSQL("CREATE TABLE checkins_pendentes (" +
@@ -30,11 +33,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "paciente_id INTEGER," +
                 "paciente_nome TEXT," +
                 "exercicio_nome TEXT," +
-                "dor INTEGER)");
+                "dor INTEGER," +
+                "comentario TEXT)"); // Novo campo adicionado
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Como estamos em fase de desenvolvimento, se a versão mudar,
+        // ele apaga as tabelas antigas e cria as novas com a coluna comentário
         db.execSQL("DROP TABLE IF EXISTS prontuario_local");
         db.execSQL("DROP TABLE IF EXISTS checkins_pendentes");
         onCreate(db);

@@ -83,17 +83,17 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/et_observacoes"
+        android:id="@+id/et_comentario_exercicio"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_marginTop="8dp"
-        android:background="#F5F5F5"
+        android:background="@android:drawable/edit_text"
         android:gravity="top|start"
         android:hint="Como você se sentiu? Alguma dificuldade?"
         android:inputType="textMultiLine"
         android:padding="12dp"
         android:textColor="#1A1A1A"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_obs_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -101,12 +101,13 @@
     <Button
         android:id="@+id/btn_salvar_registro"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="55dp"
         android:layout_marginTop="24dp"
         android:backgroundTint="#4DB6AC"
         android:text="SALVAR REGISTRO"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/et_observacoes"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/et_comentario_exercicio"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

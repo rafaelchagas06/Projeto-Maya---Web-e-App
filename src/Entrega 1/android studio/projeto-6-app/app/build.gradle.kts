@@ -55,7 +55,12 @@ dependencies {
 
     implementation("com.onesignal:OneSignal:[5.0.0, 5.99.99]")
 
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // --- MUDANÇA DO GRÁFICO AQUI ---
+    // A linha original fica comentada para ele não buscar na internet:
+    // implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // A linha nova aponta para o arquivo que você colou na pasta libs:
+    implementation(files("libs/MPAndroidChart-v3.1.0.aar"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
