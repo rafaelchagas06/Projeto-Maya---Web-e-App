@@ -175,8 +175,6 @@ Caso necessário, clique no ícone do **Elefante Azul** (**Sync Project with Gra
 
 - Utilize um Emulador Android 
 
-- Caso prefira baixe o apk em Executáveis (Localize na estrutura de pastas)
-
 Depois clique no botão:
 
 ```text
@@ -184,6 +182,8 @@ Run ▶
 ```
 
 na barra superior do Android Studio.
+
+- Caso prefira baixe o apk em Executáveis (Localize na estrutura de pastas)
 
 ---
 
