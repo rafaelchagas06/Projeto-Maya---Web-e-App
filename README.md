@@ -104,20 +104,102 @@ Acesse o projeto diretamente do seu navegador, sem precisar instalar nada!
 É só clicar no link abaixo: https://alinhatech.netlify.app/login
 
 ---
+# 🏥 RPG Clinic App
 
-## 💻 Configuração para Desenvolvimento
+## 🌐 Acesso à Versão Web
+O sistema possui uma interface administrativa e API hospedadas na nuvem. Acesse pelo link abaixo:
 
-Descreva como instalar todas as dependências para desenvolvimento e como rodar um test-suite automatizado de algum tipo. Se necessário, faça isso para múltiplas plataformas.
+👉 **[CLIQUE AQUI PARA ACESSAR A VERSÃO WEB](https://alinhatech.netlify.app/login)**
 
-Para abrir este projeto você necessita das seguintes ferramentas:
+---
 
--<a href="https://godotengine.org/download">GODOT</a>
+## 📱 Instalação do Aplicativo Android
 
-```sh
-make install
-npm test
-Coloque código do prompt de comnando se for necessário
+Siga os passos abaixo para compilar e rodar o aplicativo mobile em ambiente de desenvolvimento.
+
+---
+
+## 🛠️ Pré-requisitos
+
+- **Android Studio** (Versão Ladybug ou superior)
+- **JDK 11** ou superior
+- **Git** instalado
+
+---
+
+## 🚀 Passo a Passo
+
+### 1️⃣ Clonar o Repositório
+
+```bash
+git clone https://github.com/2026-1-NCC3/Projeto6.git
 ```
+
+---
+
+### 2️⃣ Abrir o Projeto
+
+No Android Studio:
+
+- Vá em **File > Open**
+- Selecione a pasta raiz do projeto:
+
+```text
+projeto-6-app
+```
+
+---
+
+### 3️⃣ Sincronizar o Gradle
+
+Aguarde a indexação do projeto.
+
+O aplicativo já conta com as dependências necessárias configuradas localmente na pasta:
+
+```text
+app/libs
+```
+
+Isso garante o build mesmo em redes restritas.
+
+Caso necessário, clique no ícone do **Elefante Azul** (**Sync Project with Gradle Files**).
+
+---
+
+### 4️⃣ Rodar o App
+
+- Conecte um dispositivo físico via USB  
+  (**com Depuração USB ativa**)
+
+**OU**
+
+- Utilize um Emulador Android 
+
+- Caso prefira baixe o apk em Executáveis (Localize na estrutura de pastas)
+
+Depois clique no botão:
+
+```text
+Run ▶
+```
+
+na barra superior do Android Studio.
+
+---
+
+## ✅ Tecnologias Utilizadas
+
+- Android Studio
+- Java / Kotlin
+- Gradle
+- API REST
+- Netlify
+
+---
+
+## 📂 Repositório Oficial
+
+👉 https://github.com/2026-1-NCC3/Projeto6
 
 ---
 
