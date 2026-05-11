@@ -20,7 +20,7 @@ O sistema possui funcionalidades de:
 
 Abaixo está a representação visual da estrutura do sistema:
 
-![Preview do Diagrama](POO.png)
+![Preview do Diagrama](POO.drawio.png)
 
 ---
 
