@@ -1,0 +1,198 @@
+package com.example.rpgclinicapp;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ProgressBar progressCircular;
+    private TextView textPorcentagemCentral;
+    private TextView textContadorSuperior;
+
+    // Variável para guardar a dor selecionada
+    private int nivelDorSelecionado = -1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Oculta a Action Bar superior
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+        setContentView(R.layout.activity_main);
+
+        // --- Inicialização dos Componentes do Círculo de Progresso ---
+        progressCircular = findViewById(R.id.progressCircular);
+        textPorcentagemCentral = findViewById(R.id.textPorcentagemCentral);
+        textContadorSuperior = findViewById(R.id.textContadorExercicios);
+
+        // --- Lógica da Saudação e Data Dinâmica  ---
+        configurarSaudacaoEData();
+
+        // --- Lógica de Escala de Dor ---
+        configurarEscalaDor();
+
+        // --- Configuração da Barra Inferior ---
+        configurarNavegacao();
+
+        // --- Solicitar Permissão de Notificação (Para o OneSignal) ---
+        solicitarPermissaoNotificacao();
+    }
+
+    // O onResume roda toda vez que você volta para esta tela
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Recupera os dados que você salvou na memória
+        SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+
+        // --- ADICIONADO: Avisa o OneSignal quem é o paciente logado ---
+        long meuId = prefs.getLong("idDoUsuario", -1);
+        if (meuId != -1) {
+            com.onesignal.OneSignal.login(String.valueOf(meuId));
+        }
+        // --------------------------------------------------------------
+
+        // Pega quantos foram concluídos (se não existir, é 0)
+        int feitos = prefs.getInt("exerciciosConcluidos", 0);
+
+        // Pega o total de exercícios (Se a ExerciciosActivity ainda não tiver salvo nada, colocamos 4 como padrão)
+        int total = prefs.getInt("totalExercicios", 4);
+
+        // Atualiza a interface (Círculo, porcentagem e contador) com os dados reais salvos
+        atualizarInterfaceProgresso(feitos, total);
+
+        // Atualiza a saudação caso o nome tenha mudado
+        configurarSaudacaoEData();
+    }
+
+    // --- Função para atualizar o Círculo e os Textos ---
+    private void atualizarInterfaceProgresso(int concluidos, int total) {
+        if (total <= 0) return;
+
+        int porcentagem = (concluidos * 100) / total;
+        if (porcentagem > 100) porcentagem = 100;
+
+        if (progressCircular != null) {
+            progressCircular.setProgress(porcentagem);
+        }
+
+        if (textPorcentagemCentral != null) {
+            textPorcentagemCentral.setText(porcentagem + "%");
+        }
+
+        if (textContadorSuperior != null) {
+            textContadorSuperior.setText(concluidos + "/" + total);
+        }
+    }
+
+    private void configurarSaudacaoEData() {
+        TextView textSaudacao = findViewById(R.id.textSaudacao);
+        TextView textData = findViewById(R.id.textData);
+
+        if (textSaudacao != null && textData != null) {
+            Calendar calendario = Calendar.getInstance();
+            int horaAtual = calendario.get(Calendar.HOUR_OF_DAY);
+            String saudacao;
+
+            if (horaAtual >= 6 && horaAtual < 12) {
+                saudacao = "Bom dia";
+            } else if (horaAtual >= 12 && horaAtual < 18) {
+                saudacao = "Boa tarde";
+            } else {
+                saudacao = "Boa noite";
+            }
+
+            SharedPreferences prefs = getSharedPreferences("MeusDados", MODE_PRIVATE);
+            String nomeUsuario = prefs.getString("nomeDoUsuario", "Paciente");
+
+            textSaudacao.setText(saudacao + ", " + nomeUsuario + "!");
+
+            SimpleDateFormat formatadorData = new SimpleDateFormat("EEEE, dd 'de' MMMM", new Locale("pt", "BR"));
+            String dataAtual = formatadorData.format(new Date());
+            dataAtual = dataAtual.substring(0, 1).toUpperCase() + dataAtual.substring(1) + ".";
+
+            textData.setText(dataAtual);
+        }
+    }
+
+    private void configurarEscalaDor() {
+        final int[] idsBotoesDor = {
+                R.id.dor_1, R.id.dor_2, R.id.dor_3, R.id.dor_4, R.id.dor_5,
+                R.id.dor_6, R.id.dor_7, R.id.dor_8, R.id.dor_9, R.id.dor_10
+        };
+
+        for (int i = 0; i < idsBotoesDor.length; i++) {
+            final int nivel = i + 1;
+            final TextView tvDor = findViewById(idsBotoesDor[i]);
+
+            if (tvDor != null) {
+                tvDor.setOnClickListener(v -> {
+                    nivelDorSelecionado = nivel;
+                    Toast.makeText(MainActivity.this, "Dor nível " + nivel, Toast.LENGTH_SHORT).show();
+
+                    for (int id : idsBotoesDor) {
+                        View b = findViewById(id);
+                        if (b != null) {
+                            b.setScaleX(1.0f);
+                            b.setScaleY(1.0f);
+                            b.setAlpha(0.6f);
+                        }
+                    }
+                    v.setScaleX(1.2f);
+                    v.setScaleY(1.2f);
+                    v.setAlpha(1.0f);
+                });
+            }
+        }
+    }
+
+    private void configurarNavegacao() {
+        LinearLayout navAgenda = findViewById(R.id.nav_agenda);
+        if (navAgenda != null) {
+            navAgenda.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, AgendaActivity.class)));
+        }
+
+        LinearLayout navExercicios = findViewById(R.id.nav_exercicios);
+        if (navExercicios != null) {
+            navExercicios.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ExerciciosActivity.class)));
+        }
+
+        LinearLayout navProgresso = findViewById(R.id.nav_progresso);
+        if (navProgresso != null) {
+            navProgresso.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ProgressoActivity.class)));
+        }
+
+        // --- ADICIONADO: NAVEGAÇÃO PARA A TELA DE PERFIL ---
+        LinearLayout navPerfil = findViewById(R.id.nav_perfil);
+        if (navPerfil != null) {
+            navPerfil.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, PerfilActivity.class);
+                startActivity(intent);
+            });
+        }
+    }
+
+    // Mantemos apenas a permissão para o OneSignal funcionar nas versões mais recentes do Android
+    private void solicitarPermissaoNotificacao() {
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
+    }
+}

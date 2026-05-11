@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardElevation="2dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <VideoView
+                android:id="@+id/video_item_exercicio"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/img_item_exercicio"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+        <TextView
+            android:id="@+id/tv_item_nome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nome do Exercício"
+            android:textColor="#1A1A1A"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_item_repeticoes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="3 séries de 15s"
+            android:textColor="#F07167"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_item_descricao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Descrição detalhada do exercício aqui."
+            android:textColor="#757575"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/btn_item_completo"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_time_unselected"
+            android:gravity="center"
+            android:text="Marcar como feito"
+            android:textColor="#1A1A1A"
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
