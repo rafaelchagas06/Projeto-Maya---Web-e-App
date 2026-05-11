@@ -148,7 +148,7 @@ Coloque código do prompt de comnando se for necessário
 
 ## 📋 Licença/License
 
-<a href="https://example.com">AlinhaTech APP</a> © 2026 by <a href="https://example.com">Breno Sales Colaneri, Guilherme Leão Rodrigues, Izabelli Ribeiro dos Santos e Rafael Chagas Silva, FECAP </a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+<a href="https://example.com">AlinhaTech APP</a> © 2026 by Breno Sales Colaneri, Guilherme Leão Rodrigues, Izabelli Ribeiro dos Santos e Rafael Chagas Silva, FECAP is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
 
 ---
 

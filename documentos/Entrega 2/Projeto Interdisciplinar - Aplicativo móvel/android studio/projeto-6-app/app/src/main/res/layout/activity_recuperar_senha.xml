@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <!-- Logo placeholder -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:text="maya\nyamamoto rpg"
+        android:textColor="#4DD0E1"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <!-- Títulos -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Recuperar Senha"
+        android:textColor="#1A1A1A"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:text="Digite o seu e-mail abaixo e enviaremos um link para você redefinir sua senha de acesso."
+        android:textColor="#9E9E9E"
+        android:textSize="12sp" />
+
+    <!-- Campo Email -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/bg_input_field"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_dialog_email"
+            app:tint="#BDBDBD" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Endereço de e-mail"
+                android:textColor="#9E9E9E"
+                android:textSize="10sp" />
+            <EditText
+                android:id="@+id/et_email_recuperar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="seu.email@exemplo.com"
+                android:inputType="textEmailAddress"
+                android:paddingTop="2dp"
+                android:textColor="#1A1A1A"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Botão Enviar Link -->
+    <Button
+        android:id="@+id/btn_enviar_link"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_button_teal"
+        android:text="ENVIAR LINK"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:backgroundTint="@null" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lembrou da senha? "
+            android:textColor="#9E9E9E"
+            android:textSize="12sp" />
+        <TextView
+            android:id="@+id/tv_voltar_login_recuperar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voltar para Entrar"
+            android:textColor="#F07167"
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+</LinearLayout>
