@@ -81,7 +81,6 @@ public class ProgressoActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     List<Prontuario> lista = response.body();
                     salvarHistoricoNoSQLite(idPaciente, lista);
-                    // Agora carregamos do banco para garantir que as funções de "acumular" e "ordenar" funcionem
                     carregarNotasDoSQLite();
                     gerarGrafico();
                 } else {
@@ -103,7 +102,6 @@ public class ProgressoActivity extends AppCompatActivity {
         List<Entry> entradas = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        // IMPORTANTE: ORDER BY data ASC faz o gráfico seguir a linha do tempo (da esquerda para a direita)
         Cursor cursor = db.rawQuery("SELECT dor FROM prontuario_local ORDER BY data ASC", null);
 
         int count = 0;
@@ -135,22 +133,23 @@ public class ProgressoActivity extends AppCompatActivity {
         chartDor.invalidate();
     }
 
+    // --- MUDANÇA PRINCIPAL AQUI ---
     private void carregarNotasDoSQLite() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // ORDER BY data DESC para mostrar a nota mais recente no topo do histórico
         Cursor cursor = db.rawQuery("SELECT observacao, data FROM prontuario_local ORDER BY data DESC", null);
 
         StringBuilder acumulado = new StringBuilder();
         String dataMaisRecente = "---";
 
         if (cursor.moveToFirst()) {
-            dataMaisRecente = cursor.getString(1); // Pega a data do primeiro (mais recente)
+            // Formata a data do cabeçalho
+            dataMaisRecente = formatarDataBrasil(cursor.getString(1));
             do {
                 String obs = cursor.getString(0);
-                String data = cursor.getString(1);
+                // Formata a data de cada item da lista
+                String dataFormatada = formatarDataBrasil(cursor.getString(1));
 
-                // Formata cada nota no histórico acumulado
-                acumulado.append("📅 ").append(data).append("\n")
+                acumulado.append("📅 ").append(dataFormatada).append("\n")
                         .append(obs).append("\n")
                         .append("----------------------------\n\n");
             } while (cursor.moveToNext());
@@ -160,6 +159,20 @@ public class ProgressoActivity extends AppCompatActivity {
 
         if (tvNotasMedicas != null) tvNotasMedicas.setText(acumulado.toString());
         if (tvDataNota != null) tvDataNota.setText("Atualizado em: " + dataMaisRecente);
+    }
+
+    // --- FUNÇÃO NOVA PARA CORTAR O "T" E FORMATAR ---
+    private String formatarDataBrasil(String dataBanco) {
+        if (dataBanco == null || dataBanco.isEmpty()) return "";
+        try {
+            String dataSemHora = dataBanco.split("T")[0];
+            java.text.SimpleDateFormat formatoOriginal = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+            java.text.SimpleDateFormat formatoBrasil = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+            java.util.Date dataConvertida = formatoOriginal.parse(dataSemHora);
+            return formatoBrasil.format(dataConvertida);
+        } catch (Exception e) {
+            return dataBanco; // Se der erro, mostra original para não travar
+        }
     }
 
     private void salvarHistoricoNoSQLite(long idPaciente, List<Prontuario> lista) {
