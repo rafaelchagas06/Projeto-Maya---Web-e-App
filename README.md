@@ -197,6 +197,11 @@ na barra superior do Android Studio.
 
 ---
 
+## 🎲 Diagrama de Classes | Programação Orientada a Objetivos e Estrutura de Dados
+
+📂 [Abrir Diagrama de Classes](https://github.com/2026-1-NCC3/Projeto6/tree/19080edc5db092023bdfb0ccf69ec132b0b4f765/documentos/Entrega%202/Programa%C3%A7%C3%A3o%20Orientada%20a%20Objetivos%20e%20Estrutura%20de%20Dados)
+
+
 ## 📂 Repositório Oficial
 
 👉 https://github.com/2026-1-NCC3/Projeto6
