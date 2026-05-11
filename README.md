@@ -122,6 +122,12 @@ Instalar o APP.apk:
 
 OBS: Com o APK salvo basta apenas abrir o download que o app estará funcionando no seu dispositivo.
 
+<b>WEB:</b>
+
+Acesse o projeto diretamente do seu navegador, sem precisar instalar nada!
+
+É só clicar no link abaixo: https://alinhatech.netlify.app/login
+
 ---
 
 ## 💻 Configuração para Desenvolvimento
